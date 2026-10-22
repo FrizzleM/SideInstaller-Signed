@@ -1,0 +1,9 @@
+# Signed IPAs are release assets, never commits.
+*.ipa
+
+# Working folders of the sign and deploy-pages workflows
+/output/
+/_site/
+/main-repo/
+
+.DS_Store

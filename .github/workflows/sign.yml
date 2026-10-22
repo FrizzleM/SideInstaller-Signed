@@ -1,0 +1,181 @@
+name: sign
+
+# Signs a SideInstaller release with every certificate in the pool and
+# publishes the signed IPAs as a release of this repository, under the same tag.
+# Then rebuilds and deploys the install page (deploy-pages).
+#
+# The unsigned IPA comes from FrizzleM/SideInstaller's release of that tag; it
+# is downloaded, never committed, and neither are the signed ones. The
+# certificate pool is the merge of every source in cert-url.txt, starting with
+# this repository's certs/ folder (see certs/README.md).
+#
+# Runs on:
+#   - repository_dispatch `unsigned-release` {"tag": "<tag>"}, which
+#     FrizzleM/SideInstaller's notify-signer sends for every new release,
+#   - Run workflow (Actions › sign), to re-sign a tag by hand,
+#   - a push that changes the certificate pool or the signing scripts, which
+#     re-signs the main repository's latest release.
+#
+# A run first compares the certificate pool and the IPA with what the release
+# was last signed from (scripts/check_for_changes.sh). When nothing changed it
+# stops there: nothing is signed, the release and the live page stay as they
+# are. New releases and runs started by hand with "force" always sign.
+#
+# Whether a tag is a beta comes from the main repository's release: a
+# prerelease there is a prerelease here and goes on beta.html.
+
+on:
+  repository_dispatch:
+    types: [unsigned-release]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "FrizzleM/SideInstaller release tag to sign, e.g. v1.6.0 (blank = its latest release)"
+        required: false
+        default: ""
+        type: string
+      force:
+        description: "Re-sign even when nothing has changed"
+        required: false
+        default: true
+        type: boolean
+      cert_zip_url:
+        description: "Override cert pool source(s): space-separated .zip URLs, github.com/owner/repo URLs and/or folder paths (blank = use cert-url.txt)"
+        required: false
+        default: ""
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - "certs/**"
+      - "cert-url.txt"
+      - "scripts/sign_with_all_certs.sh"
+      - "scripts/check_for_changes.sh"
+      - "scripts/generate_plist.sh"
+      - "scripts/resolve_release.sh"
+      - "scripts/publish_release.sh"
+
+concurrency:
+  group: sign
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sign:
+    name: Sign with every certificate
+    runs-on: macos-latest
+    permissions:
+      contents: write   # create the release and upload the signed IPAs
+    outputs:
+      # "true" when the precheck found nothing to re-sign, which also holds the
+      # Pages deploy below so the live page is left exactly as it is.
+      skipped: ${{ steps.precheck.outputs.skip }}
+    env:
+      MAIN_REPO: FrizzleM/SideInstaller
+      OUTPUT_DIR: output
+      GH_TOKEN: ${{ github.token }}
+      # sign_with_all_certs.sh authenticates its GitHub API calls with this.
+      GITHUB_TOKEN: ${{ github.token }}
+      CERT_ZIP_URL: ${{ inputs.cert_zip_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Make scripts executable
+        run: chmod +x scripts/*.sh
+
+      # Sets TAG, CHANNEL, IPA_ASSET, UNSIGNED_IPA_URL, MAKE_LATEST and
+      # OUTPUT_BASE_URL for every step below. The tag reaches the script through
+      # env only and is checked there.
+      - name: Resolve the release to sign
+        id: release
+        env:
+          TAG: ${{ github.event.client_payload.tag || inputs.tag }}
+        run: ./scripts/resolve_release.sh
+
+      # What the release was last signed from, for the precheck. A new tag has
+      # no release here yet, which the precheck treats as "changed".
+      - name: Fetch the last run's state
+        shell: bash
+        run: |
+          mkdir -p "$OUTPUT_DIR"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir "$OUTPUT_DIR" --clobber \
+              --pattern sign-state.tsv --pattern certificate-validity.tsv || true
+          fi
+          ls -la "$OUTPUT_DIR"
+
+      - name: Check whether anything changed
+        id: precheck
+        env:
+          FORCE_RUN: ${{ github.event_name == 'repository_dispatch' || inputs.force }}
+        run: ./scripts/check_for_changes.sh
+
+      - name: Download the unsigned IPA
+        if: steps.precheck.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir="$RUNNER_TEMP/unsigned"
+          mkdir -p "$dir"
+          gh release download "$TAG" --repo "$MAIN_REPO" --pattern "$IPA_ASSET" --dir "$dir" --clobber
+          # A fixed name, so the file:// URL below needs no escaping.
+          mv "$dir/$IPA_ASSET" "$RUNNER_TEMP/SideInstaller-unsigned.ipa"
+          ls -l "$RUNNER_TEMP/SideInstaller-unsigned.ipa"
+
+      # The same script, unchanged, as the old sign-sideinstaller workflow ran.
+      # It takes the IPA by URL and curl reads file:// URLs, so it signs the
+      # file downloaded above.
+      - name: Sign IPA with all certificates
+        if: steps.precheck.outputs.skip != 'true'
+        shell: bash
+        run: UNSIGNED_IPA_URL="file://$RUNNER_TEMP/SideInstaller-unsigned.ipa" ./scripts/sign_with_all_certs.sh
+
+      - name: Ensure signed IPAs exist
+        if: steps.precheck.outputs.skip != 'true'
+        shell: bash
+        run: |
+          shopt -s nullglob
+          signed=("${OUTPUT_DIR}"/"${OUTPUT_PREFIX:-sideinstaller}"-*.ipa)
+          shopt -u nullglob
+          if [[ ${#signed[@]} -eq 0 ]]; then
+            echo "No signed IPAs were produced in ${OUTPUT_DIR}/." >&2
+            exit 1
+          fi
+          printf '%s\n' "${signed[@]}"
+
+      # Each manifest points at its IPA on this repository's release
+      # (OUTPUT_BASE_URL); the page serves the manifests themselves.
+      - name: Generate OTA manifests
+        if: steps.precheck.outputs.skip != 'true'
+        run: ./scripts/generate_plist.sh
+
+      # Record the state the precheck computed, not a fresh one, so the next
+      # run's comparison is against exactly the inputs this release was built from.
+      - name: Record signing state
+        if: steps.precheck.outputs.skip != 'true'
+        shell: bash
+        run: |
+          if [[ -f "${NEW_STATE_FILE:-}" ]]; then
+            cp "$NEW_STATE_FILE" "$OUTPUT_DIR/sign-state.tsv"
+          else
+            echo "No precheck state to record; clearing the previous one." >&2
+            rm -f "$OUTPUT_DIR/sign-state.tsv"
+          fi
+
+      - name: Publish the signed release
+        if: steps.precheck.outputs.skip != 'true'
+        run: ./scripts/publish_release.sh
+
+  # Rebuilds sideinstaller.net from the releases, including the one just made.
+  pages:
+    name: Deploy the install page
+    needs: sign
+    if: needs.sign.outputs.skipped != 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy-pages.yml
