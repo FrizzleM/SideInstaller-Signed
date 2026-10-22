@@ -26,6 +26,9 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPT_DIR="$ROOT_DIR/scripts"
 SITE_URL="${SITE_URL:?SITE_URL is required, e.g. https://sideinstaller.net}"
 SITE_URL="${SITE_URL%/}"
+# itms-services only takes https:// manifest URLs. Pages reports a custom
+# domain as http:// until HTTPS is enforced, though it serves https anyway.
+SITE_URL="https://${SITE_URL#*://}"
 SITE_DIR="${SITE_DIR:-$ROOT_DIR/_site}"
 STATIC_DIR="${STATIC_DIR:-$ROOT_DIR/main-repo}"
 SIGNED_REPO="${SIGNED_REPO:-${GITHUB_REPOSITORY:-FrizzleM/SideInstaller-Signed}}"
