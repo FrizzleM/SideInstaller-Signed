@@ -690,6 +690,27 @@
     });
     empty.classList.toggle('show', visible===0);
   }
+  /* The page is only rebuilt when a certificate changes, so the days left
+     baked into it go stale. Recount them from each card's expiry on every
+     visit; a certificate that has run out since loses its Valid pill and
+     sinks with the dead ones. */
+  cards.forEach(function(c){
+    var t=Date.parse(c.getAttribute('data-expires')||'');
+    if(isNaN(t)) return;
+    var s=(t-Date.now())/864e5, d=s>=0?Math.ceil(s):Math.floor(s);
+    c.setAttribute('data-days',d);
+    var el=c.querySelector('.days');
+    if(el){
+      var cls=d<0?'bad':d<=7?'crit':d<=30?'warn':'good';
+      el.className='days '+cls;
+      el.textContent=d<0?'Expired':d===0?'Expires today':d===1?'1 day left':d+' days left';
+    }
+    if(d<0){
+      c.setAttribute('data-rank','2');
+      var pill=c.querySelector('.pill.good');
+      if(pill) pill.parentNode.removeChild(pill);
+    }
+  });
   q.addEventListener('input',apply);
   sortSel.addEventListener('change',apply);
   apply();

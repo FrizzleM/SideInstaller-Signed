@@ -2,8 +2,10 @@
 *.ipa
 
 # Working folders of the sign and deploy-pages workflows
-/output/
 /_site/
 /main-repo/
+
+__pycache__/
+*.pyc
 
 .DS_Store

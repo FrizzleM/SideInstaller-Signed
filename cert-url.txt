@@ -1,10 +1,11 @@
 # SideInstaller — certificate pool sources
 #
-# The "sign" workflow signs the IPA once per certificate found
-# across ALL of the sources listed below. List one source per line; blank lines
-# and lines starting with '#' are ignored. Add or remove a line to add/drop a
-# source. Override the whole list for a one-off run with the CERT_ZIP_URL env
-# var (space/newline-separated).
+# The "sign" workflow signs the IPA once per certificate found across ALL of
+# the sources listed below, and checks every day for certificates added,
+# changed or removed here. List one source per line; blank lines and lines
+# starting with '#' are ignored. Add or remove a line to add/drop a source.
+# Override the whole list for a one-off run with the CERT_ZIP_URL env var
+# (space/newline-separated).
 #
 # Four source kinds are supported (the workflow detects and handles each):
 #
@@ -34,13 +35,15 @@
 #      to pull — all (default) | signed | revoked | missingP12; 'signed' drops
 #      Apple-revoked certificates.
 #
-# MERGE: the sources are concatenated into one pool and EVERY certificate in it
-# is signed — there is no de-duplication. The same signing certificate often
-# appears in more than one source, and within a source across several
-# provisioning-profile variants; each of those produces its own install card,
-# named after its folder. Two entries whose folder names normalise to the same
-# output name write the same file, so the later source in this list wins that
-# one; entries with different names both survive.
+# MERGE: the sources are fetched in parallel and concatenated into one pool, in
+# the order listed. Each certificate folder becomes one install card, named
+# after the folder; the same signing certificate often appears under several
+# provisioning-profile variants, and each variant gets its own card. When two
+# folders' names normalise to the same file name, the first source in this list
+# wins, so certs/ (listed first) overrides the public pools.
+#
+# A source that fails to answer, or answers with no certificates, never
+# removes anything from the page; its certificates are kept until it answers.
 
 certs
 https://sideloading.net

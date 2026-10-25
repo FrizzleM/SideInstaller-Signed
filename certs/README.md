@@ -2,16 +2,14 @@
 
 Drop your own signing certificates in here and the **sign**
 workflow picks them up alongside the public pools listed in
-[`cert-url.txt`](../cert-url.txt). Committing anything to this folder also
-triggers a signing run on its own (it re-signs the main repository's latest
-release), so uploading a certificate is all it takes to get a new install card
-on the page.
+[`cert-url.txt`](../cert-url.txt). Committing anything to this folder starts a
+run on its own, which signs the new certificate (and only that) for the live
+releases and adds its card to the page, usually within a couple of minutes.
 
-This folder is listed **first** in `cert-url.txt`, which matters: certificates
-are de-duplicated by the leaf certificate's SHA-1 fingerprint and the first
-source wins. So if a certificate here also exists in one of the public pools,
-your copy is the one that gets signed, and your folder name is the name that
-shows on the install page.
+This folder is listed **first** in `cert-url.txt`, which matters: when a
+certificate here has the same name as one in a public pool, the first source
+wins. So name your folder like the public one (e.g. `HSBC Bank plc`) and your
+copy is the one that gets signed.
 
 ## Folder structure
 
@@ -41,7 +39,8 @@ Rules:
   the profile has a different name entirely, the only `.mobileprovision` in the
   folder is used regardless.
 - **Both files are required.** A folder with a `.p12` but no `.mobileprovision`
-  is skipped and counted as a failure in the run log.
+  is not signed; it is listed under "Not signed" in the release notes, as is a
+  wrong password or a profile that was issued for a different certificate.
 - **Extra files are ignored.** Notes, `.txt` files, `NexStore/` subfolders and
   anything else can sit alongside without affecting anything.
 
@@ -66,11 +65,11 @@ With none of them present the fallback is the `P12_PASSWORD` env var, and
 failing that the public pools' default (`WSF`) — which is almost certainly not
 your password, so add a `password.txt` for anything of your own.
 
-## Removing a certificate
+## Changing or removing a certificate
 
-Delete its folder and commit. Releases signed from then on don't include it.
-The release that is current at the time keeps its signed IPA as an asset, and
-the page keeps its card at the bottom, until the next release replaces it.
+Replace its files and commit: the run that follows re-signs that certificate
+alone. Delete its folder and commit: the run removes its IPA from the live
+releases and its card from the page.
 
 ## Before you commit
 

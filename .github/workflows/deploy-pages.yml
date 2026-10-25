@@ -1,14 +1,14 @@
 name: deploy-pages
 
 # Builds the install site (sideinstaller.net) from this repository's releases
-# and deploys it to GitHub Pages: index.html from the latest stable signed
-# release, beta.html from the newest prerelease, each with its OTA manifests,
-# plus the static pages and icons from FrizzleM/SideInstaller. See
-# scripts/build_site.sh. Nothing is signed and nothing is committed.
+# and deploys it to GitHub Pages: index.html from the latest stable release,
+# beta.html from the newest prerelease, each with its OTA manifests, plus the
+# static pages and icons from FrizzleM/SideInstaller. See signer/site.py.
+# Nothing is signed and nothing is committed.
 #
-# sign runs this after every release it publishes. Run it by hand
-# (Actions › deploy-pages) to rebuild the page from the releases as they are,
-# e.g. after editing terms.html in the main repository.
+# sign runs this whenever it changes a release. Run it by hand (Actions ›
+# deploy-pages) to rebuild the page as the releases are, e.g. after editing
+# terms.html in the main repository.
 #
 # One-time setup: Settings › Pages › Source = "GitHub Actions", and the custom
 # domain (sideinstaller.net) set there. The install links are built from the
@@ -20,9 +20,8 @@ on:
   push:
     branches: [main]
     paths:
-      - "scripts/template.html"
-      - "scripts/generate_index.sh"
-      - "scripts/build_site.sh"
+      - "site/**"
+      - "signer/site.py"
       - ".github/workflows/deploy-pages.yml"
 
 concurrency:
@@ -35,18 +34,24 @@ permissions:
   id-token: write   # required by actions/deploy-pages
 
 jobs:
-  build:
-    name: Build the site
+  deploy:
+    name: Build and deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Check out the main repository's static files
         uses: actions/checkout@v7
         with:
           repository: FrizzleM/SideInstaller
           path: main-repo
+          persist-credentials: false
           fetch-depth: 1
           filter: blob:none
           sparse-checkout-cone-mode: false
@@ -65,24 +70,16 @@ jobs:
       - name: Assemble the site
         env:
           GH_TOKEN: ${{ github.token }}
+          MAIN_REPO: FrizzleM/SideInstaller
           SITE_URL: ${{ steps.pages.outputs.base_url }}
           STATIC_DIR: main-repo
-          SITE_DIR: _site
-        run: bash scripts/build_site.sh
+          PYTHONUNBUFFERED: "1"
+        run: python3 -m signer site --out _site
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v5
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
 
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
