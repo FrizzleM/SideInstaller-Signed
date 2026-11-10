@@ -8,6 +8,9 @@
   var doc = document;
   function $(sel, root) { return (root || doc).querySelector(sel); }
   function $$(sel, root) { return [].slice.call((root || doc).querySelectorAll(sel)); }
+  // The icon sprite at the address this page links it at, version and all.
+  var firstIcon = doc.querySelector("use[href*='icons.svg']");
+  var SPRITE = firstIcon ? firstIcon.getAttribute("href").split("#")[0] : "assets/icons.svg";
   var reduce = window.matchMedia
     ? window.matchMedia("(prefers-reduced-motion: reduce)")
     : { matches: false };
@@ -77,7 +80,7 @@
       film.className = "film";
       film.innerHTML =
         '<button type="button" class="film-close" aria-label="Close">' +
-        '<svg class="icon" aria-hidden="true"><use href="assets/icons.svg#x"/></svg></button>' +
+        '<svg class="icon" aria-hidden="true"><use href="' + SPRITE + '#x"/></svg></button>' +
         '<div class="film-frame"></div>';
       doc.body.appendChild(film);
       film.addEventListener("click", function (e) {

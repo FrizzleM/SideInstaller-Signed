@@ -17,7 +17,9 @@ Rows are ordered so the certificates that work come first: valid, then never
 confirmed, then revoked or expired; longest-lived first within each group."""
 from __future__ import annotations
 
+import hashlib
 import html
+import re
 import shutil
 import time
 from datetime import datetime, timezone
@@ -33,6 +35,12 @@ STATIC_FILES = ("favicon-32.png", "favicon-192.png", "app-icon.png",
 # Pages that say the same thing whatever the release holds.
 PLAIN_PAGES = ("index.html", "help.html")
 PARTIALS = ("head", "nav", "footer")
+# Shared files every page links to. GitHub Pages lets browsers keep any file
+# for ten minutes, so a page deployed after them could meet the copies from
+# before and draw with the old styles and icons. Each link carries a hash of
+# the file's contents, so a changed file is a new address.
+VERSIONED = ("site.css", "site.js", "icons.svg")
+VERSIONED_LINK = re.compile(r'assets/(' + "|".join(re.escape(n) for n in VERSIONED) + r')(?=["#])')
 HEADLINE = "Install SideInstaller"
 TAGLINE = "Three steps in Safari, on the iPhone or iPad you want to set up."
 BETA_HEADLINE = "Install the beta"
@@ -122,10 +130,15 @@ def install_tokens(state: dict, *, manifest_base: str, page_title: str, headline
     }
 
 
+def asset_versions(assets: Path) -> dict[str, str]:
+    return {name: hashlib.sha256((assets / name).read_bytes()).hexdigest()[:10] for name in VERSIONED}
+
+
 def compose(template: str, parts: dict[str, str], tokens: dict[str, str], *,
-            current: str = "", cta: bool = True) -> str:
+            current: str = "", cta: bool = True, versions: dict[str, str] | None = None) -> str:
     """A page from its template: the shared head, navigation and footer first,
-    then the tokens. `current` is the navigation link to mark as this page."""
+    then the tokens. `current` is the navigation link to mark as this page;
+    `versions` stamps the links to the shared files (asset_versions)."""
     nav = parts["nav"].replace("{{NAV_CTA}}", NAV_CTA if cta else "")
     if current:
         nav = nav.replace(f'<a href="{current}"', f'<a href="{current}" aria-current="page"')
@@ -134,6 +147,8 @@ def compose(template: str, parts: dict[str, str], tokens: dict[str, str], *,
         page = page.replace(token, value.rstrip("\n"))
     for token, value in tokens.items():
         page = page.replace(token, value)
+    if versions:
+        page = VERSIONED_LINK.sub(lambda m: f"{m.group(0)}?v={versions[m.group(1)]}", page)
     left = page.find("{{")
     if left != -1:
         raise Fatal(f"a page still has an unfilled token: {page[left:left + 40]!r}")
@@ -206,6 +221,7 @@ def build(*, root: Path, out: Path, static_dir: Path, site_url: str, signed_repo
     site = root / "site"
     parts = {name: (site / "partials" / f"{name}.html").read_text(encoding="utf-8") for name in PARTIALS}
     install_page = (site / "install.html").read_text(encoding="utf-8")
+    versions = asset_versions(site / "assets")
     now = utcnow()
     shutil.rmtree(out, ignore_errors=True)
     out.mkdir(parents=True)
@@ -258,17 +274,17 @@ def build(*, root: Path, out: Path, static_dir: Path, site_url: str, signed_repo
         tokens = {**shared, "{{PAGE_VERSION}}": _esc(app.get("version") or "—"), **tokens}
         # An install page's own navigation link stands in for the Install button.
         (out / page).write_text(compose(install_page, parts, tokens, current="install.html" if channel == "stable" else "",
-                                        cta=False), encoding="utf-8")
+                                        cta=False, versions=versions), encoding="utf-8")
         log(f"   {page}: {state['tag']}, {len(st.signed(state))} row(s)")
 
     for page in PLAIN_PAGES:
         template = (site / page).read_text(encoding="utf-8")
-        (out / page).write_text(compose(template, parts, shared, current=page), encoding="utf-8")
+        (out / page).write_text(compose(template, parts, shared, current=page, versions=versions), encoding="utf-8")
     if not any(channel == "beta" for channel, _, _ in pages):
         closed = site / "beta-closed.html"
         if closed.exists():
-            (out / "beta.html").write_text(compose(closed.read_text(encoding="utf-8"), parts, shared),
-                                           encoding="utf-8")
+            (out / "beta.html").write_text(compose(closed.read_text(encoding="utf-8"), parts, shared,
+                                                   versions=versions), encoding="utf-8")
             log("   beta.html: no prerelease, so the closed-beta page")
     shutil.copytree(site / "assets", out / "assets")
     for name in STATIC_FILES:
