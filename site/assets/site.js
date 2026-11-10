@@ -98,137 +98,147 @@
   });
 
   /* ---------- the phone's run (Overview) ----------
-   The hero's phone, copied into "How it works", plays the four steps beside
-   it once when it scrolls into view. Picking a step stops the playback and
-   shows that step. */
+   "How it works" holds the four steps and a copy of the hero's phone on one
+   stage. The stage stays pinned while the page scrolls through the track
+   under it, and the scroll plays the run: each step takes a quarter of the
+   track, and everything on the phone is set from how far into its step the
+   page is, so scrolling back plays it backwards. Picking a step scrolls to
+   it. With reduced motion nothing is pinned, and picking a step shows it. */
 
-  var heroPhone = $("#phone"), stage = $("#demo"), stepList = $("#steps");
-  if (heroPhone && stage && stepList) (function () {
+  var heroPhone = $("#phone"), stage = $("#demo"), stepList = $("#steps"), track = $("#howTrack");
+  if (heroPhone && stage && stepList && track) (function () {
     var phone = heroPhone.cloneNode(true);
     phone.removeAttribute("id");
+    phone.classList.add("is-scrub");
     phone.setAttribute("aria-label", "SideInstaller on an iPhone, going through an install");
     stage.appendChild(phone);
 
+    var pin = $(".how-stage", track);
     var steps = $$(".step", stepList);
     var bar = $("#stepBar");
     var segments = [];
-    var stateRow = $(".p-state", phone), stateText = $(".p-state span", phone);
-    var runTitle = $(".p-run-head b", phone), pct = $(".p-pct", phone), fill = $(".p-bar i", phone);
-    var stepTitle = $(".p-step-text b", phone), stepCount = $(".p-step-text small", phone);
+    var ui = {
+      state: $(".p-state", phone), stateText: $(".p-state span", phone),
+      runTitle: $(".p-run-head b", phone), pct: $(".p-pct", phone), fill: $(".p-bar i", phone),
+      stepTitle: $(".p-step-text b", phone), stepCount: $(".p-step-text small", phone),
+      sheet: $(".p-sheet", phone), scrim: $(".p-scrim", phone), popup: $(".p-popup", phone),
+      email: $(".p-input", phone), password: $(".p-input.is-secret", phone)
+    };
+    var EMAIL = ui.email.textContent, DOTS = ui.password.textContent;
 
     // The app's own checklist for a SideStore install.
     var RUN = ["Connect the VPN", "Get pairing file", "Open the device link", "Sign in to Apple ID",
                "Download SideStore", "Sign the app", "Install SideStore", "Finish setup"];
-    // How long each step holds while it plays.
-    var DWELL = [3400, 3800, 4400, 6800];
-    var timers = [], frame = 0, auto = 0;
+    // Where a picked step lands, as a share of it: the moment that shows it.
+    var LAND = [1, 0.62, 0.62, 1];
+    // The share of the track the run takes; the rest holds the last frame.
+    var RUN_SHARE = 0.92;
 
-    function later(fn, ms) { timers.push(setTimeout(fn, reduce.matches ? 0 : ms)); }
-    function progress(p) {
-      fill.style.transform = "scaleX(" + Math.max(p, 0.02) + ")";
-      pct.textContent = Math.round(p * 100) + "%";
-    }
-    function runStep(i) {
-      stepTitle.textContent = RUN[i];
-      stepCount.textContent = "Step " + (i + 1) + " of " + RUN.length;
-    }
-    function finish() {
-      progress(1);
-      runStep(RUN.length - 1);
-      runTitle.textContent = "Installed";
-      phone.classList.add("is-done");
-    }
+    function clamp(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+    function span(t, from, to) { return clamp((t - from) / (to - from)); }
+    function ease(x) { return 1 - Math.pow(1 - x, 3); }
+    function text(node, value) { if (node.textContent !== value) node.textContent = value; }
+    function flag(name, on) { phone.classList.toggle(name, on); }
 
-    function show(n) {
-      timers.forEach(clearTimeout);
-      timers = [];
-      cancelAnimationFrame(frame);
-      phone.className = "phone";
-      stateRow.classList.remove("is-off");
-      stateText.textContent = "Tunnel connected";
-      runTitle.textContent = "Installing";
-      progress(0);
-      runStep(0);
+    var drawn = "";
+    function render(n, t) {
+      var key = n + ":" + t.toFixed(4);
+      if (key === drawn) return;
+      drawn = key;
+
       steps.forEach(function (step, i) {
         step.classList.toggle("is-active", i === n);
         step.classList.toggle("is-past", i < n);
+        step.style.setProperty("--fill", i < n ? 1 : i === n ? t : 0);
         $(".step-btn", step).setAttribute("aria-current", i === n ? "step" : "false");
       });
-      segments.forEach(function (seg, i) { seg.classList.toggle("is-on", i <= n); });
+      segments.forEach(function (seg, i) {
+        seg.style.setProperty("--fill", i < n ? 1 : i === n ? 0.08 + 0.92 * t : 0);
+      });
 
-      if (n === 0) {
-        // The tunnel comes up.
-        stateRow.classList.add("is-off");
-        stateText.textContent = "Tunnel off";
-        later(function () {
-          stateRow.classList.remove("is-off");
-          stateText.textContent = "Tunnel connected";
-        }, 1400);
-      } else if (n === 1) {
-        // The Apple ID sheet.
-        later(function () { phone.classList.add("has-sheet"); }, 250);
-      } else if (n === 2) {
-        // The run starts and stops for the pairing code.
-        phone.classList.add("is-running");
-        progress(0.12);
-        runStep(1);
-        later(function () { phone.classList.add("is-waiting", "has-popup"); }, 700);
-      } else {
-        // The rest of the run, through to Installed.
-        phone.classList.add("is-running");
-        progress(0.12);
-        runStep(2);
-        if (reduce.matches) { finish(); return; }
-        var from = 0.12, span = 4600, started = 0;
-        var tick = function (now) {
-          if (!started) started = now;
-          var t = Math.min((now - started) / span, 1);
-          var p = from + (1 - from) * t;
-          progress(p);
-          runStep(Math.min(2 + Math.floor(t * 6), RUN.length - 1));
-          if (t < 1) frame = requestAnimationFrame(tick);
-          else finish();
-        };
-        later(function () { frame = requestAnimationFrame(tick); }, 500);
-      }
+      // 1. LocalDevVPN: the tunnel comes up.
+      var up = n > 0 || t > 0.4;
+      ui.state.classList.toggle("is-off", !up);
+      text(ui.stateText, up ? "Tunnel connected" : "Tunnel off");
+
+      // 2. The Apple ID sheet rises, is filled in, Continue, and it goes.
+      var sheet = n !== 1 ? 0 : t < 0.5 ? ease(span(t, 0.04, 0.3)) : 1 - ease(span(t, 0.84, 1));
+      ui.sheet.style.transform = "translateY(" + ((1 - sheet) * 102).toFixed(2) + "%)";
+      var typed = n > 1 ? 1 : n === 1 ? span(t, 0.3, 0.56) : 0;
+      var dots = n > 1 ? 1 : n === 1 ? span(t, 0.58, 0.7) : 0;
+      text(ui.email, EMAIL.slice(0, Math.round(EMAIL.length * typed)));
+      text(ui.password, DOTS.slice(0, Math.round(DOTS.length * dots)));
+      flag("is-continue", n === 1 && t > 0.74 && t < 0.84);
+
+      // 3. Install is tapped, the run starts, and stops for the pairing code.
+      flag("is-pressed", n === 2 && t > 0.03 && t < 0.12);
+      flag("is-running", n === 3 || (n === 2 && t >= 0.12));
+      var pop = n !== 2 ? 0 : Math.min(span(t, 0.4, 0.5), 1 - span(t, 0.82, 0.9));
+      ui.popup.style.opacity = pop.toFixed(3);
+      ui.popup.style.transform = "translateY(calc(" + ((1 - pop) * 12).toFixed(2) + " * var(--p))) scale(" +
+        (0.97 + 0.03 * pop).toFixed(4) + ")";
+      flag("is-waiting", n === 2 && t >= 0.42 && t < 0.86);
+      ui.scrim.style.opacity = Math.max(sheet, pop).toFixed(3);
+
+      // 4. The rest of the run, through to Installed.
+      var done = n === 3 && t >= 0.86;
+      var p = n < 2 ? 0 : n === 2 ? 0.12 * span(t, 0.12, 0.38) : 0.12 + 0.88 * span(t, 0, 0.86);
+      var at = n < 2 ? 0 : n === 2 ? (t < 0.26 ? 0 : 1) : done ? 7 : Math.min(2 + Math.floor(span(t, 0, 0.86) * 6), 7);
+      ui.fill.style.transform = "scaleX(" + Math.max(p, 0.02).toFixed(4) + ")";
+      text(ui.pct, Math.round(p * 100) + "%");
+      text(ui.stepTitle, RUN[at]);
+      text(ui.stepCount, "Step " + (at + 1) + " of " + RUN.length);
+      text(ui.runTitle, done ? "Installed" : "Installing");
+      flag("is-done", done);
     }
 
-    function stop() {
-      clearTimeout(auto);
-      stepList.classList.remove("is-playing");
+    var scrolling = !reduce.matches;
+
+    // How far the stage has travelled while pinned, from 0 to 1.
+    function pinTop() { return parseFloat(getComputedStyle(pin).top) || 0; }
+    function travel() { return Math.max(1, track.offsetHeight - pin.offsetHeight); }
+    function fromScroll() {
+      var g = clamp(clamp((pinTop() - track.getBoundingClientRect().top) / travel()) / RUN_SHARE) * 4;
+      var n = Math.min(3, Math.floor(g));
+      render(n, g - n);
     }
-    function play(n) {
-      stepList.style.setProperty("--dwell", DWELL[n] + "ms");
-      stepList.classList.add("is-playing");
-      show(n);
-      auto = setTimeout(function () {
-        if (n < steps.length - 1) play(n + 1);
-        else stop();
-      }, DWELL[n]);
+    var queued = false;
+    function onScroll() {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () { queued = false; fromScroll(); });
+    }
+
+    function pick(n) {
+      if (!scrolling) { render(n, LAND[n]); return; }
+      var into = (n + (n === 3 ? 0.95 : 0.55)) / 4 * RUN_SHARE;
+      window.scrollTo({
+        top: track.getBoundingClientRect().top + window.scrollY - pinTop() + into * travel(),
+        behavior: "smooth"
+      });
     }
 
     steps.forEach(function (step, i) {
-      $(".step-btn", step).addEventListener("click", function () { stop(); show(i); });
+      $(".step-btn", step).addEventListener("click", function () { pick(i); });
     });
     if (bar) {
       steps.forEach(function (step, i) {
         var seg = doc.createElement("button");
         seg.type = "button";
         seg.setAttribute("aria-label", "Step " + (i + 1) + ": " + $(".step-text b", step).textContent);
-        seg.addEventListener("click", function () { stop(); show(i); });
+        seg.addEventListener("click", function () { pick(i); });
         bar.appendChild(seg);
         segments.push(seg);
       });
     }
 
-    show(0);
-    if ("IntersectionObserver" in window && !reduce.matches) {
-      var inView = new IntersectionObserver(function (entries) {
-        if (!entries[0].isIntersecting) return;
-        inView.disconnect();
-        play(0);
-      }, { threshold: 0.6 });
-      inView.observe(phone);
+    if (scrolling) {
+      track.classList.add("is-scroll");
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll);
+      fromScroll();
+    } else {
+      render(0, LAND[0]);
     }
   })();
 

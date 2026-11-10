@@ -432,6 +432,9 @@ kbd{
   transition:opacity var(--mid) var(--ease), transform var(--mid) var(--ease);
 }
 .phone.has-popup .p-popup{opacity:1; transform:none}
+/* The scroll-driven copy (How it works) sets these from the scroll itself. */
+.phone.is-scrub .p-sheet,.phone.is-scrub .p-scrim,.phone.is-scrub .p-popup{transition:none}
+.phone.is-pressed .p-surface .p-btn,.phone.is-continue .p-sheet .p-btn{transform:scale(.97); opacity:.85}
 .p-popup-head{display:flex; align-items:center; gap:calc(8 * var(--p)); font-weight:600}
 .p-popup-head > .icon{font-size:calc(20 * var(--p)); color:var(--warning)}
 .p-popup-head b{flex:1; font-weight:600}
@@ -469,19 +472,30 @@ kbd{
   .app:not(.is-wide) h3{font-size:19px}
 }
 
-/* ---------- how it works ---------- */
+/* ---------- how it works ----------
+   The steps and a copy of the hero's phone share one stage. With the script,
+   and without reduced motion, the track under the stage is several screens
+   tall: the stage stays pinned under the navigation while the page scrolls
+   through it, and the scroll plays the run (assets/site.js). Otherwise it is
+   an ordinary block and picking a step shows it. */
 
-.how{
-  display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:clamp(40px,8vw,120px);
-  grid-template-areas:"head phone" "steps phone"; grid-template-rows:auto 1fr; align-items:start;
+:root{--stage-h:calc(100vh - var(--nav-h)); --how-run:320vh}
+@supports (height:100svh){:root{--stage-h:calc(100svh - var(--nav-h))}}
+
+.how .section-head{margin-bottom:48px}
+.how-stage{
+  display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center;
+  column-gap:clamp(40px,8vw,120px);
 }
-.how .section-head{grid-area:head; margin-bottom:48px}
-.how-phone{grid-area:phone; align-self:center}
-.how-phone .phone{--phone-w:clamp(280px,27vw,330px)}
-.steps{grid-area:steps; max-width:30rem}
+.how-track.is-scroll{height:calc(100vh - var(--nav-h) + var(--how-run))}
+.how-track.is-scroll .how-stage{position:sticky; top:var(--nav-h); height:var(--stage-h)}
+.how-phone{display:flex; justify-content:center}
+/* As tall as the stage allows, so the whole phone stays in view while pinned. */
+.how-phone .phone{--phone-w:min(clamp(280px,27vw,330px), calc((var(--stage-h) - 48px) / 2.12))}
+.steps{max-width:30rem}
 
 /* The run's timeline, as the app draws it: a ring per step, joined by a
-   hairline. The line under the step in flight fills while it plays. */
+   hairline. The line under the step in flight fills with the scroll. */
 .step{position:relative}
 .step-btn{
   display:flex; gap:16px; width:100%; padding:0 0 28px; border:0; background:none;
@@ -492,7 +506,7 @@ kbd{
 .step-rail::before,.step-rail::after{
   content:""; position:absolute; left:13.5px; top:32px; bottom:-24px; width:1px; background:var(--hairline);
 }
-.step-rail::after{background:var(--accent); transform-origin:50% 0; transform:scaleY(0)}
+.step-rail::after{background:var(--accent); transform-origin:50% 0; transform:scaleY(var(--fill,0))}
 .step:last-child .step-rail::before,.step:last-child .step-rail::after{display:none}
 .node{
   position:relative; display:grid; place-items:center; width:28px; height:28px; border-radius:50%;
@@ -512,27 +526,23 @@ kbd{
 .step.is-past .node{background:var(--control); box-shadow:inset 0 0 0 1px var(--hairline)}
 .step.is-past .node span{opacity:0}
 .step.is-past .node .icon{opacity:1}
-.step.is-past .step-rail::after{transform:scaleY(1)}
-@keyframes rail{to{transform:scaleY(1)}}
-.steps.is-playing .step.is-active .step-rail::after{animation:rail var(--dwell,3s) linear both}
 
-/* On a phone only the step in flight shows, under a bar that fills a segment
-   for each, the way the app's setup does. */
+/* On a phone only the step in flight shows, over the phone, under a bar
+   that fills a segment for each, the way the app's setup does. */
 .step-bar{display:none}
 @media (max-width:859px){
-  .how{display:block}
-  .how .section-head{margin-bottom:40px}
-  .how-phone{display:flex; justify-content:center; margin-top:32px}
-  .how-phone .phone{--phone-w:min(264px,68vw)}
+  .how .section-head{margin-bottom:32px}
+  .how-stage{display:flex; flex-direction:column; justify-content:center}
+  .how-phone{margin-top:24px}
+  .how-phone .phone{--phone-w:min(264px, 68vw, calc((var(--stage-h) - 248px) / 2.12))}
   .js .step-bar{display:flex; gap:4px; margin:0 0 12px}
   .step-bar button{flex:1; height:28px; padding:12px 0; border:0; background:none; cursor:pointer}
   .step-bar button::before{
-    content:""; display:block; height:4px; border-radius:2px; background:var(--control-hover);
-    transition:background-color var(--mid) var(--ease);
+    content:""; display:block; height:4px; border-radius:2px;
+    background:linear-gradient(var(--accent),var(--accent)) 0 0/calc(var(--fill,0) * 100%) 100% no-repeat, var(--control-hover);
   }
-  .step-bar button.is-on::before{background:var(--accent)}
   .steps{max-width:none; margin-top:32px}
-  .js .steps{min-height:132px; margin-top:0}
+  .js .steps{min-height:160px; margin-top:0}
   .js .step:not(.is-active){display:none}
   .js .step-btn{padding:0; cursor:default}
   .js .step-rail{display:none}
