@@ -106,7 +106,7 @@ def release_notes(state: dict, *, main_repo: str, signed_repo: str, site_url: st
     tag, channel = state["tag"], state["channel"]
     version = (state.get("app") or {}).get("version") or tag
     unsigned = (state.get("unsigned_ipa") or {}).get("url")
-    page = site_url.rstrip("/") + ("/beta.html" if channel == "beta" else "/")
+    page = site_url.rstrip("/") + ("/beta.html" if channel == "beta" else "/install.html")
     shown = page.split("://", 1)[-1].rstrip("/")
     source = f"[{main_repo} {tag}](https://github.com/{main_repo}/releases/tag/{tag})"
     lines = [f"SideInstaller {version}, signed once per certificate from",

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <!-- One line set at a 1.5 stroke on a 24 grid; the page sets the colour and
+       the stroke. "wrench" is Lucide's (ISC licence). -->
+  <symbol id="install" viewBox="0 0 24 24"><path d="M12 3v11"/><path d="m8 10 4 4 4-4"/><path d="M8.5 7.5H7a2 2 0 0 0-2 2V18a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9.5a2 2 0 0 0-2-2h-1.5"/></symbol>
+  <symbol id="download" viewBox="0 0 24 24"><path d="M12 4v11"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M5 19.5h14"/></symbol>
+  <symbol id="chevron-right" viewBox="0 0 24 24"><path d="m9 5.5 6.5 6.5L9 18.5"/></symbol>
+  <symbol id="chevron-down" viewBox="0 0 24 24"><path d="m5.5 9 6.5 6.5L18.5 9"/></symbol>
+  <symbol id="updown" viewBox="0 0 24 24"><path d="m8 9.5 4-4 4 4"/><path d="m8 14.5 4 4 4-4"/></symbol>
+  <symbol id="x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+  <symbol id="menu" viewBox="0 0 24 24"><path d="M4 8.5h16M4 15.5h16"/></symbol>
+  <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M15 9V6.5A2.5 2.5 0 0 0 12.5 4h-6A2.5 2.5 0 0 0 4 6.5v6A2.5 2.5 0 0 0 6.5 15H9"/></symbol>
+  <symbol id="external" viewBox="0 0 24 24"><path d="M8 16 16.5 7.5"/><path d="M9.5 7.5h7v7"/></symbol>
+  <symbol id="arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></symbol>
+  <symbol id="wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+  <symbol id="info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.1"/></symbol>
+  <symbol id="lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="9.5" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></symbol>
+  <symbol id="shield" viewBox="0 0 24 24"><path d="M12 3 5 5.8v5.4c0 4.3 2.8 8 7 9.8 4.2-1.8 7-5.5 7-9.8V5.8z"/><path d="M12 8.5v4"/><path d="M12 15.6v.1"/></symbol>
+  <symbol id="phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 5.5h2"/></symbol>
+  <symbol id="wifi" viewBox="0 0 24 24"><path d="M3.5 9.5a12.5 12.5 0 0 1 17 0"/><path d="M6.7 13a8 8 0 0 1 10.6 0"/><path d="M9.8 16.4a3.4 3.4 0 0 1 4.4 0"/><path d="M12 19.6v.1"/></symbol>
+  <symbol id="person" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></symbol>
+  <symbol id="file" viewBox="0 0 24 24"><path d="M13.5 3H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7.5z"/><path d="M13.5 3v4.5H18"/></symbol>
+  <symbol id="again" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v4h-4"/></symbol>
+
+  <!-- The phone's status bar. -->
+  <symbol id="sys-signal" viewBox="0 0 19 19"><path stroke="none" fill="currentColor" d="M1 12.5a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1V15a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5-2.5a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5-2.5a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1V15a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1zM16 5a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="sys-wifi" viewBox="0 0 19 19"><path stroke-width="2" d="M2.2 7.4a10.4 10.4 0 0 1 14.6 0"/><path stroke-width="2" d="M5 10.6a6.4 6.4 0 0 1 9 0"/><path stroke-width="2.4" d="M9.5 14.4v.1"/></symbol>
+  <symbol id="sys-battery" viewBox="0 0 27 19"><rect x="1" y="4.5" width="22" height="11" rx="3.4" stroke-width="1" stroke-opacity=".45"/><rect x="2.6" y="6.1" width="18.8" height="7.8" rx="2" stroke="none" fill="currentColor"/><path stroke-width="1.6" stroke-opacity=".45" d="M25 8.5v3"/></symbol>
+</svg>

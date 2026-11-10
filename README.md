@@ -51,9 +51,20 @@ it needs go into one temporary keychain, and the copies are signed in parallel
 from one unpacked IPA. A full release takes a few seconds of signing. The page
 is redeployed only when something on it changed.
 
-[`deploy-pages`](.github/workflows/deploy-pages.yml) builds `index.html` from
-the latest stable release and `beta.html` from the newest prerelease, and
-deploys them to GitHub Pages at sideinstaller.net.
+[`deploy-pages`](.github/workflows/deploy-pages.yml) builds the site and
+deploys it to GitHub Pages at sideinstaller.net: `install.html` from the latest
+stable release, `beta.html` from the newest prerelease, and the overview
+(`index.html`) and help pages around them. The pages are the files in
+[`site/`](site), which share a head, a navigation bar and a footer
+(`site/partials/`) and one stylesheet and script (`site/assets/`).
+
+To look at the site before deploying it, build it from a dry run's output and
+serve the folder:
+
+```sh
+python3 -m signer site --out _site --static-dir ../SideInstaller --from-dir <dry run output>
+python3 -m http.server --directory _site
+```
 
 No IPA is ever committed, here or in the main repository.
 
