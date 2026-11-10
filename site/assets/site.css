@@ -644,6 +644,8 @@ kbd{
 .page-head{padding-top:clamp(48px,7vw,88px)}
 .page-head .display{font-size:clamp(40px,5.6vw,64px)}
 .page-head .lead{margin-top:16px; max-width:36rem}
+.page-head .page-actions{display:flex; flex-wrap:wrap; gap:12px; margin-top:24px}
+.page-head .page-actions + .meta{margin-top:16px}
 .page-head .meta{margin-top:20px}
 .block{margin-top:clamp(56px,8vw,96px)}
 .block > .headline{font-size:clamp(28px,3.4vw,40px); margin-bottom:24px}

@@ -14,7 +14,12 @@
   <header class="page-head">
     <h1 class="display rise">{{HEADLINE}}</h1>
     <p class="lead rise" style="--i:1">{{APP_TAGLINE}}</p>
-    <p class="meta rise" style="--i:2">Version {{PAGE_VERSION}} · Updated {{LAST_UPDATED}}</p>
+    <div class="page-actions rise" style="--i:2">
+      <a class="btn btn-secondary" href="{{LATEST_RELEASE_URL}}" download rel="noopener">
+        <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#download"/></svg>Download .ipa
+      </a>
+    </div>
+    <p class="meta rise" style="--i:3">Version {{PAGE_VERSION}} · Updated {{LAST_UPDATED}}</p>
   </header>
 
   <!-- Shown by assets/site.js on anything that isn't an iPhone or iPad. -->
@@ -27,7 +32,7 @@
     </div>
   </div>
 
-  <label class="gate rise" style="--i:3">
+  <label class="gate rise" style="--i:4">
     <input type="checkbox" id="tosCheck">
     <span class="box" aria-hidden="true"><svg class="icon"><use href="assets/icons.svg#check"/></svg></span>
     <span>I have read and accept the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a></span>
