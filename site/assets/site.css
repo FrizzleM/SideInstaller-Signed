@@ -1,29 +1,33 @@
 /* sideinstaller.net
 
    The palette, radii and status colours are the app's (ios-app/Theme.swift in
-   FrizzleM/SideInstaller): one near-black ramp, one blue, an off-white main
-   button. The page stays quiet so the phone, an install's progress and the
-   icons of the apps it installs are what the eye lands on. Depth comes from a
-   step between surfaces and a hairline edge, never a glow.
+   FrizzleM/SideInstaller): a ramp of night blues, and three blues with a job
+   each. Navy is the logo art's, and the wash at the top of a page; blue fills
+   what sits behind white, the main button; the light blue is drawn on the
+   dark, for links, progress and the selection. Depth comes from a step
+   between surfaces and a hairline edge.
 
    Spacing sits on a 4px grid. One easing curve, three durations. */
 
 :root{
-  /* ramp */
-  --page:#0b0c0f;
-  --card:#141518;
-  --raised:#1c1e22;
-  --control:rgba(255,255,255,.06);
-  --control-hover:rgba(255,255,255,.1);
-  --hairline:rgba(255,255,255,.08);
-  --hairline-strong:rgba(255,255,255,.16);
-  --off-white:#edeef0;
+  /* ramp: night blues, with controls and edges in a faint pale blue */
+  --page:#050b18;
+  --card:#0d1524;
+  --raised:#141e31;
+  --control:rgba(185,211,249,.07);
+  --control-hover:rgba(185,211,249,.11);
+  --hairline:rgba(185,211,249,.1);
+  --hairline-strong:rgba(185,211,249,.18);
   /* text: primary, secondary, muted */
-  --text:#f2f3f5;
-  --text-2:#a4a8b0;
-  --muted:#80858d;
-  /* colour */
-  --accent:#2f80ff;
+  --text:#f1f4f9;
+  --text-2:#aeb8ca;
+  --muted:#7f8da5;
+  /* colour: navy for the art and the wash, blue behind white, the light
+     blue (accent) on the dark */
+  --navy:#09328f;
+  --blue:#2669ed;
+  --blue-hover:#3a78f2;
+  --accent:#60a7fd;
   --positive:#4cc38a;
   --warning:#e5a140;
   --negative:#e5484d;
@@ -51,9 +55,11 @@ html{
   -webkit-text-size-adjust:100%; color-scheme:dark; background:var(--page);
   scroll-padding-top:calc(var(--nav-h) + 24px);
 }
+/* The app's page: night blue, with a wash of navy at the top. */
 body{
   margin:0; min-height:100vh; min-height:100svh; overflow-x:clip;
-  color:var(--text); background:var(--page);
+  color:var(--text);
+  background:radial-gradient(ellipse 100% 640px at 50% 0, rgba(9,50,143,.4), rgba(9,50,143,0)) no-repeat, var(--page);
   font:400 17px/1.47 var(--sans);
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
 }
@@ -63,7 +69,7 @@ a{color:inherit}
 img{max-width:100%}
 button{font:inherit; color:inherit}
 :focus-visible{outline:2px solid var(--accent); outline-offset:3px}
-::selection{background:rgba(47,128,255,.35)}
+::selection{background:rgba(96,167,253,.35)}
 
 .wrap{
   width:100%; max-width:calc(var(--max) + 2 * var(--gutter)); margin-inline:auto;
@@ -112,8 +118,8 @@ kbd{
 }
 .btn:active{transform:scale(.98)}
 .btn .icon{font-size:18px}
-.btn-primary{background:var(--off-white); color:var(--page)}
-.btn-primary:hover{background:#fff}
+.btn-primary{background:var(--blue); color:#fff}
+.btn-primary:hover{background:var(--blue-hover)}
 .btn-secondary{background:var(--control); border-color:var(--hairline); color:var(--text)}
 .btn-secondary:hover{background:var(--control-hover)}
 .btn-lg{height:52px; padding:0 28px; border-radius:26px; font-size:17px}
@@ -143,7 +149,7 @@ kbd{
 
 .nav{
   position:sticky; top:0; z-index:40; height:var(--nav-h);
-  background:rgba(11,12,15,.72);
+  background:rgba(5,11,24,.72);
   -webkit-backdrop-filter:saturate(180%) blur(20px); backdrop-filter:saturate(180%) blur(20px);
   border-bottom:1px solid transparent;
   transition:border-color var(--mid) var(--ease);
@@ -155,8 +161,6 @@ kbd{
   font-size:17px; font-weight:600; letter-spacing:-.01em; text-decoration:none;
 }
 .brand img{width:28px; height:28px; border-radius:7px; box-shadow:0 0 0 1px var(--hairline)}
-/* The icon in greys, the way the app draws its logo art. */
-.app-icon{filter:grayscale(1)}
 .nav-links{display:flex; align-items:center; gap:28px; font-size:14px}
 .nav-links a{color:var(--text-2); text-decoration:none; transition:color var(--fast) var(--ease)}
 .nav-links a:hover,.nav-links a[aria-current]{color:var(--text)}
@@ -247,7 +251,9 @@ kbd{
 }
 .phone-screen{
   position:relative; aspect-ratio:402/874; overflow:hidden;
-  border-radius:calc(55 * var(--p)); background:var(--page); color:#fff;
+  border-radius:calc(55 * var(--p)); color:#fff;
+  /* The app's page, its wash and all, in the app's points. */
+  background:radial-gradient(ellipse 100% calc(480 * var(--p)) at 50% 0, rgba(9,50,143,.4), rgba(9,50,143,0)) no-repeat, var(--page);
   font-size:calc(17 * var(--p)); line-height:1.3; text-align:left;
 }
 .p-status{
@@ -273,7 +279,7 @@ kbd{
 .p-header{display:flex; flex-direction:column; align-items:center; gap:calc(16 * var(--p))}
 .p-logo{
   width:calc(72 * var(--p)); height:calc(72 * var(--p)); border-radius:calc(19 * var(--p));
-  filter:grayscale(1); box-shadow:0 0 0 1px var(--hairline);
+  box-shadow:0 0 0 1px var(--hairline);
 }
 .p-titles{display:flex; flex-direction:column; align-items:center; gap:calc(8 * var(--p))}
 .p-title{font-size:calc(34 * var(--p)); line-height:1.2; font-weight:600; letter-spacing:-.02em}
@@ -295,7 +301,7 @@ kbd{
   display:flex; align-items:center; gap:calc(6 * var(--p)); margin-bottom:calc(12 * var(--p));
   font-size:calc(15 * var(--p)); font-weight:500; color:rgba(235,235,245,.6);
 }
-.p-sectitle .icon{font-size:calc(16 * var(--p)); color:var(--muted)}
+.p-sectitle .icon{font-size:calc(16 * var(--p)); color:var(--accent)}
 .p-field{
   display:flex; align-items:center; gap:calc(12 * var(--p)); height:calc(44 * var(--p));
   padding:0 calc(12 * var(--p)) 0 calc(8 * var(--p)); border-radius:calc(12 * var(--p));
@@ -323,7 +329,7 @@ kbd{
 }
 .p-btn{
   height:calc(52 * var(--p)); display:flex; align-items:center; justify-content:center; gap:calc(8 * var(--p));
-  border-radius:calc(12 * var(--p)); background:var(--off-white); color:var(--page); font-weight:600;
+  border-radius:calc(12 * var(--p)); background:var(--blue); color:#fff; font-weight:600;
 }
 .p-btn .icon{font-size:calc(19 * var(--p)); stroke-width:2}
 .p-run{
@@ -382,7 +388,7 @@ kbd{
   position:absolute; left:50%; bottom:calc(26 * var(--p)); z-index:2;
   display:flex; width:calc(276 * var(--p)); height:calc(62 * var(--p)); margin-left:calc(-138 * var(--p));
   padding:calc(4 * var(--p)); border-radius:calc(31 * var(--p));
-  background:rgba(34,36,41,.92); box-shadow:inset 0 0 0 1px var(--hairline);
+  background:rgba(20,30,49,.92); box-shadow:inset 0 0 0 1px var(--hairline);
   font-size:calc(10 * var(--p)); font-weight:500; color:rgba(235,235,245,.6);
 }
 .p-tabs span{
@@ -580,7 +586,7 @@ kbd{
 }
 .tool img{
   grid-row:span 2; width:56px; height:56px; border-radius:14px;
-  filter:grayscale(1); box-shadow:0 0 0 1px var(--hairline);
+  box-shadow:0 0 0 1px var(--hairline);
 }
 .tool h3{align-self:end; font-size:17px; line-height:1.3; font-weight:500}
 .tool p{align-self:start; font-size:14px; line-height:1.43; color:var(--text-2)}
@@ -636,7 +642,7 @@ kbd{
   width:min(960px,calc(100vw - 32px)); max-width:none; padding:0; border:0; overflow:visible;
   background:none; color:inherit;
 }
-.film::backdrop{background:rgba(5,5,6,.8); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px)}
+.film::backdrop{background:rgba(5,11,24,.8); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px)}
 @keyframes film-in{from{opacity:0; transform:translateY(12px) scale(.98)}}
 .film[open]{animation:film-in var(--mid) var(--ease) both}
 .film-frame{position:relative; aspect-ratio:16/9; overflow:hidden; border-radius:var(--r-card); background:#000; box-shadow:0 0 0 1px var(--hairline)}
@@ -646,7 +652,7 @@ kbd{
   background:var(--raised); color:var(--text-2); font-size:16px; cursor:pointer;
   transition:color var(--fast) var(--ease), background-color var(--fast) var(--ease);
 }
-.film-close:hover{color:var(--text); background:#26282d}
+.film-close:hover{color:var(--text); background:#1c2840}
 
 /* ---------- popups: a card over the dimmed page (Install's Developer Mode) ---------- */
 
@@ -654,7 +660,7 @@ kbd{
   width:min(34rem,calc(100vw - 32px)); max-width:none; max-height:calc(100dvh - 32px); overflow:auto;
   padding:24px; border:1px solid var(--hairline); border-radius:var(--r-card); background:var(--card); color:var(--text);
 }
-.sheet::backdrop{background:rgba(5,5,6,.7); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px)}
+.sheet::backdrop{background:rgba(5,11,24,.7); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px)}
 .sheet[open]{animation:film-in var(--mid) var(--ease) both}
 .sheet .title{padding-right:44px}
 .sheet p{margin-top:12px; font-size:16px; line-height:1.5; color:var(--text-2)}
@@ -665,7 +671,7 @@ kbd{
   background:var(--raised); color:var(--text-2); font-size:15px; cursor:pointer;
   transition:color var(--fast) var(--ease), background-color var(--fast) var(--ease);
 }
-.sheet-close:hover{color:var(--text); background:#26282d}
+.sheet-close:hover{color:var(--text); background:#1c2840}
 
 /* ---------- page heads (Install, Help) ---------- */
 
@@ -704,7 +710,7 @@ kbd{
   transition:background-color var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
 }
 .gate .box .icon{stroke-width:2.6; opacity:0; transform:scale(.6); transition:opacity var(--fast) var(--ease), transform var(--fast) var(--ease)}
-.gate input:checked ~ .box{background:var(--accent); box-shadow:none}
+.gate input:checked ~ .box{background:var(--blue); box-shadow:none}
 .gate input:checked ~ .box .icon{opacity:1; transform:none}
 .gate input:focus-visible ~ .box{outline:2px solid var(--accent); outline-offset:3px}
 .gate a{color:var(--accent); text-decoration:none}
@@ -728,7 +734,7 @@ kbd{
 .howto li:first-child{border-top:0}
 .howto li::before{
   counter-increment:howto; content:counter(howto); position:absolute; left:0; top:14px;
-  width:20px; font:400 13px/1.5 var(--mono); color:var(--muted); text-align:center;
+  width:20px; font:400 13px/1.5 var(--mono); color:var(--accent); text-align:center;
 }
 .howto b{color:var(--text); font-weight:500}
 .aside{max-width:40rem; padding:16px 20px; border-radius:var(--r-control); background:var(--control); font-size:15px; line-height:1.5; color:var(--text-2)}
@@ -775,7 +781,7 @@ kbd{
 .field input:focus,.select:focus{border-color:var(--accent)}
 .select{
   flex:none; width:auto; padding:0 36px 0 14px; cursor:pointer; -webkit-appearance:none; appearance:none;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2380858d' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='m5.5 9 6.5 6.5L18.5 9'/></svg>");
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237f8da5' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='m5.5 9 6.5 6.5L18.5 9'/></svg>");
   background-repeat:no-repeat; background-position:right 14px center;
 }
 .certs{max-width:40rem; border:1px solid var(--hairline); border-radius:var(--r-card); background:var(--card); overflow:hidden}
@@ -795,8 +801,8 @@ kbd{
 .cert[data-days^="-"]{opacity:.5}
 .cert.is-lead{padding:20px 20px 20px 24px; background:var(--raised)}
 .cert.is-lead .cert-name{font-size:19px; font-weight:600; letter-spacing:-.01em}
-.cert.is-lead .btn{height:44px; padding:0 24px; border-radius:22px; font-size:15px; background:var(--off-white); border-color:transparent; color:var(--page)}
-.cert.is-lead .btn:hover{background:#fff}
+.cert.is-lead .btn{height:44px; padding:0 24px; border-radius:22px; font-size:15px; background:var(--blue); border-color:transparent; color:#fff}
+.cert.is-lead .btn:hover{background:var(--blue-hover)}
 .certs-empty{max-width:40rem; padding:32px 0; color:var(--text-2)}
 @media (max-width:519px){
   .cert-tools{flex-direction:column}
@@ -812,7 +818,7 @@ kbd{
   transition:background-color var(--fast) var(--ease), color var(--fast) var(--ease);
 }
 .seg button:hover{color:var(--text)}
-.seg button[aria-pressed="true"],.seg button[aria-selected="true"]{background:#34373d; color:var(--text)}
+.seg button[aria-pressed="true"],.seg button[aria-selected="true"]{background:#22304a; color:var(--text)}
 .seg-row{display:flex; flex-wrap:wrap; gap:12px}
 .videos{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px 16px; margin-top:24px}
 .videos figcaption{display:flex; justify-content:space-between; gap:12px; margin-top:12px; font-size:14px; color:var(--text-2)}
