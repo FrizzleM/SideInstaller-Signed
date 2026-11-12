@@ -49,15 +49,16 @@
   }
 
   /* ---- entrance cascade, echoing the app's per-object settle-in ---- */
-  .hero,.intro-video,.notice,.tos-gate,.step,.footer{animation:rise .5s cubic-bezier(.22,.9,.35,1) both}
+  .hero,.intro-video,.notice,.tos-gate,.step,.legacy,.footer{animation:rise .5s cubic-bezier(.22,.9,.35,1) both}
   .tos-gate{animation-delay:.03s}
   .step:nth-of-type(1){animation-delay:.06s}
   .step:nth-of-type(2){animation-delay:.12s}
   .step:nth-of-type(3){animation-delay:.18s}
-  .footer{animation-delay:.24s}
+  .legacy{animation-delay:.24s}
+  .footer{animation-delay:.3s}
   @keyframes rise{from{opacity:0; transform:translateY(16px) scale(.98)}}
   @media (prefers-reduced-motion:reduce){
-    .hero,.intro-video,.notice,.tos-gate,.step,.footer{animation:none}
+    .hero,.intro-video,.notice,.tos-gate,.step,.legacy,.footer{animation:none}
   }
 
   .wrap{max-width:920px; margin:0 auto}
@@ -283,17 +284,38 @@
   }
   .step-card .install-btn{width:100%; margin-top:16px}
   .step-card ol:first-child{margin-top:0}
-  /* the DNS button stands on its own above the card, not inside it */
-  .step > .install-btn{display:flex; width:100%; margin:0 0 14px}
-  .callout{
-    margin-top:16px; padding:13px 16px; border-radius:var(--radius-sm);
-    background:rgba(52,211,153,.08); border:1px solid rgba(52,211,153,.25);
+
+  /* ---- step 1: the three App Store apps siboot runs in ---- */
+  .apps{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+  .app-btn{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    padding:14px 16px; font-size:15px; font-weight:700; text-decoration:none; color:var(--text);
+    background:var(--card); border:1px solid var(--stroke); border-radius:var(--radius-sm);
+    -webkit-backdrop-filter:blur(20px) saturate(140%); backdrop-filter:blur(20px) saturate(140%);
+    transition:transform .14s, background .14s, border-color .14s;
   }
-  .callout b{color:var(--good)}
+  .app-btn svg{width:15px; height:15px; flex:none; color:var(--accent2)}
+  .app-btn:hover{background:var(--card-hover); border-color:var(--stroke-strong); transform:translateY(-2px)}
+  .app-btn:active{transform:scale(.97)}
+
+  /* ---- a command to paste into rootshell or Minis ----
+     Breaks anywhere but never hyphenates, like the wallet addresses: a hyphen
+     copied by hand would break the command. A tap selects the whole line. */
+  .cmd{
+    display:flex; align-items:center; gap:10px; margin-top:8px; padding:8px 8px 8px 12px;
+    background:rgba(0,0,0,.22); border:1px solid var(--stroke); border-radius:12px;
+  }
+  .step-card .cmd code{
+    flex:1; min-width:0; padding:0; background:none; border-radius:0; color:var(--text);
+    font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
+    overflow-wrap:anywhere; -webkit-hyphens:none; hyphens:none;
+    -webkit-user-select:all; user-select:all;
+  }
 
   /* ---- TOS gate ----
-     Sits above the guide. Until the box is ticked, steps 1-3 stay dimmed
-     and the certificate installs stay non-interactive. */
+     Sits above the guide. Until the box is ticked, the whole guide stays
+     dimmed and non-interactive: the App Store links, the commands, and the
+     certificate installs under Legacy. */
   .tos-gate{
     display:flex; align-items:center; gap:12px; margin:22px 0 0; padding:15px 18px;
     background:rgba(33,112,245,.08); border:1px solid rgba(33,112,245,.3);
@@ -315,8 +337,7 @@
   .tos-text a{color:var(--accent2); text-decoration:none; font-weight:600}
   .tos-text a:hover{text-decoration:underline}
   .guide{transition:opacity .25s}
-  .guide.locked{opacity:.45}
-  .grid.locked{pointer-events:none}
+  .guide.locked{opacity:.45; pointer-events:none}
 
   /* ---- controls ---- */
   .controls{
@@ -388,32 +409,35 @@
   .empty{display:none; text-align:center; color:var(--muted); padding:50px 0; font-size:15px}
   .empty.show{display:block}
 
-  /* ---- how-to ---- */
-  details.howto{
-    margin-top:14px; background:var(--card); border:1px solid var(--stroke);
-    border-radius:var(--radius); overflow:hidden;
+  /* ---- legacy: the enterprise certificates, folded away under the steps ----
+     Closed, it's one row. Open, the DNS profile, its three lines and the
+     certificate grid sit below that row, flat on the page as they did when
+     they were steps 1 and 2, so the cards aren't boxed inside another card. */
+  .legacy{margin-top:34px}
+  .legacy > summary{
+    list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px;
+    padding:15px 20px; font-size:15px; font-weight:700; color:var(--text);
+    background:var(--card); border:1px solid var(--stroke); border-radius:var(--radius);
     -webkit-backdrop-filter:blur(20px) saturate(140%); backdrop-filter:blur(20px) saturate(140%);
+    transition:background .14s, border-color .14s;
   }
-  details.howto summary{
-    list-style:none; cursor:pointer; padding:16px 20px; font-weight:700; font-size:15px;
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-  }
-  details.howto summary::-webkit-details-marker{display:none}
-  details.howto summary::after{content:"+"; color:var(--muted); font-size:20px; font-weight:400; transition:transform .2s}
-  details.howto[open] summary::after{transform:rotate(45deg)}
-  .howto-body{padding:0 20px 20px; color:var(--muted); font-size:14.5px}
-  .howto-body ol{margin:0; padding-left:20px}
-  .howto-body li{margin:8px 0}
-  .howto-body code{
-    background:rgba(255,255,255,.07); padding:1px 6px; border-radius:6px;
-    font-size:13px; color:var(--text);
-  }
+  .legacy > summary::-webkit-details-marker{display:none}
+  .legacy > summary small{color:var(--faint); font-size:13px; font-weight:600}
+  .legacy > summary::after{content:"+"; margin-left:auto; color:var(--muted); font-size:20px; font-weight:400; line-height:1; transition:transform .2s}
+  .legacy[open] > summary::after{transform:rotate(45deg)}
+  .legacy > summary:hover{background:var(--card-hover); border-color:var(--stroke-strong)}
+  .legacy > summary:focus-visible{outline:2px solid var(--accent2); outline-offset:2px}
+  .legacy-body{margin-top:14px}
+  /* the DNS button stands on its own above the card, not inside it */
+  .legacy-body > .install-btn{display:flex; width:100%; margin:0 0 14px}
+  .legacy-body > .step-card{margin-bottom:14px}
 
   .footer{margin-top:40px; text-align:center; color:var(--faint); font-size:13px}
   .footer a{color:var(--muted); text-decoration:none}
   .footer a:hover{color:var(--text)}
 
   @media (max-width:520px){
+    .apps{grid-template-columns:1fr}
     .grid{grid-template-columns:1fr}
     .controls{flex-direction:column; align-items:stretch}
     .search{flex:0 0 auto} /* in column direction the 240px basis becomes height */
@@ -431,7 +455,6 @@
     <p class="tagline">{{APP_TAGLINE}}</p>
     <div class="badges">
       <span class="badge">Version <b>{{APP_VERSION}}</b></span>
-      <span class="badge"><b>{{CERT_COUNT}}</b> certificates</span>
     </div>
     <div class="links social">
       <button type="button" class="link-btn youtube" id="tutorialBtn" aria-haspopup="dialog" aria-controls="tutorialModal">
@@ -480,82 +503,96 @@
     <span class="tos-text">I have read and accept the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a>.</span>
   </label>
 
-  <div class="guide" id="guide">
-    <section class="step" id="setup">
+  <main class="guide" id="guide">
+    <section class="step" id="apps">
       <div class="step-head">
         <span class="step-num">1</span>
         <div>
-          <h2 class="step-title">Setup</h2>
+          <h2 class="step-title">Get the apps</h2>
+          <p class="step-sub">Free on the App Store. Needs iOS 27+, Wi-Fi and Developer Mode on.</p>
         </div>
       </div>
-      <a class="install-btn" href="SideInstallerDNS.mobileconfig">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M12 3a15.3 15.3 0 0 1 0 18"/><path d="M12 3a15.3 15.3 0 0 0 0 18"/></svg>
-        Install DNS Profile
-      </a>
+      <div class="apps">
+        <a class="app-btn" href="https://apps.apple.com/app/rootshell-local-terminal-ssh/id6755794662" target="_blank" rel="noopener">rootshell<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="app-btn" href="https://apps.apple.com/app/id6759188481" target="_blank" rel="noopener">Open Minis<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="app-btn" href="https://apps.apple.com/app/id6755608044" target="_blank" rel="noopener">LocalDevVPN<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+      </div>
+    </section>
+
+    <section class="step" id="pair">
+      <div class="step-head">
+        <span class="step-num">2</span>
+        <div>
+          <h2 class="step-title">Pair</h2>
+          <p class="step-sub">In rootshell</p>
+        </div>
+      </div>
       <div class="step-card">
         <ol>
-          <li>Tap <b>Install DNS Profile</b> above and tap <b>Allow</b> when Safari asks to download the configuration profile.</li>
-          <li>Open <code>Settings</code> and tap <b>Profile Downloaded</b> (or go to <code>Settings → General → VPN &amp; Device Management</code>), then tap <b>Install</b>.</li>
-          <li>Apply the DNS: in <code>Settings → General → VPN &amp; Device Management</code>, open <b>DNS</b> and make sure <b>SideInstaller</b> is selected. Keep it enabled until setup is complete.</li>
+          <li>Turn on <b>Location Diary Mode › Session Only</b> in rootshell's settings.</li>
+          <li>Run these one at a time:
+            <div class="cmd"><code>curl -fsSLO https://raw.githubusercontent.com/FrizzleM/siboot/main/rootshell/bin/siboot-pair.wasm</code><button type="button" class="copy-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy</span></button></div>
+            <div class="cmd"><code>ifconfig en0 &gt; ifconfig.txt</code><button type="button" class="copy-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy</span></button></div>
+            <div class="cmd"><code>./siboot-pair.wasm</code><button type="button" class="copy-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy</span></button></div>
+          </li>
+          <li>In <code>Settings › Privacy &amp; Security › Developer Mode</code>, tap <b>Pair with siboot</b> at the bottom and enter the code rootshell shows. Leave rootshell running.</li>
         </ol>
       </div>
     </section>
 
-    <section class="step" id="installation">
-      <div class="step-head">
-        <span class="step-num">2</span>
-        <div>
-          <h2 class="step-title">Installation</h2>
-        </div>
-      </div>
-
-      <div class="controls">
-        <div class="search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-          <input id="q" type="search" placeholder="Search certificates…" autocomplete="off" spellcheck="false">
-        </div>
-        <select id="sort" class="sort" aria-label="Sort certificates">
-          <option value="days">Most days left</option>
-          <option value="days-asc">Soonest to expire</option>
-          <option value="name">Name (A–Z)</option>
-        </select>
-      </div>
-
-      <main id="grid" class="grid">
-  {{CARDS}}
-      </main>
-      <p id="empty" class="empty">No certificates match your search.</p>
-
-      <details class="howto">
-        <summary>How to install</summary>
-        <div class="howto-body">
-          <ol>
-            <li>Open this page <b>on your iPhone or iPad in Safari</b>.</li>
-            <li>Pick any certificate above and tap <b>Install</b>, then confirm the prompt.</li>
-            <li>Wait for the app to finish installing on your Home Screen.</li>
-            <li>Go to <code>Settings → General → VPN &amp; Device Management</code>, tap the developer profile, and <b>Trust</b> it.</li>
-            <li>Launch the app. If one certificate is revoked or won't open, just install with another.</li>
-          </ol>
-        </div>
-      </details>
-    </section>
-
-    <section class="step" id="completion">
+    <section class="step" id="install">
       <div class="step-head">
         <span class="step-num">3</span>
         <div>
-          <h2 class="step-title">Completion</h2>
-          <p class="step-sub">You're all set.</p>
+          <h2 class="step-title">Install</h2>
+          <p class="step-sub">In Open Minis</p>
         </div>
       </div>
       <div class="step-card">
-        <p>That's it. Open <b>SideInstaller</b> from your Home Screen and use it to install <b>SideStore</b> (or SideStore + LiveContainer), straight from your device. No PC needed.</p>
-        <div class="callout">
-          <b>Once SideStore is installed, the DNS profile is no longer needed.</b> Remove it in <code>Settings → General → VPN &amp; Device Management</code> → <b>SideInstaller</b> → <b>Remove Profile</b> — or keep it and just stop using its DNS by switching <code>DNS</code> back to <b>Automatic</b> in the same menu.
-        </div>
+        <ol>
+          <li>Connect LocalDevVPN, then run:
+            <div class="cmd"><code>wget -qO- https://raw.githubusercontent.com/FrizzleM/siboot/main/minis/install.sh | sh</code><button type="button" class="copy-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy</span></button></div>
+          </li>
+          <li>Type the transfer code rootshell shows, then sign in with your Apple Account. Keep Minis open until it's done.</li>
+          <li>Trust your Apple Account in <code>Settings › General › VPN &amp; Device Management</code>, then open SideInstaller.</li>
+        </ol>
       </div>
     </section>
-  </div>
+
+    <details class="legacy" id="legacy">
+      <summary>Legacy <small>Enterprise certificates · {{CERT_COUNT}}</small></summary>
+      <div class="legacy-body">
+        <a class="install-btn" href="SideInstallerDNS.mobileconfig">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8"/><path d="M3.6 15h16.8"/><path d="M12 3a15.3 15.3 0 0 1 0 18"/><path d="M12 3a15.3 15.3 0 0 0 0 18"/></svg>
+          Install DNS Profile
+        </a>
+        <div class="step-card">
+          <ol>
+            <li>Install the profile in Settings, then select <b>SideInstaller</b> in <code>Settings › General › VPN &amp; Device Management › DNS</code>.</li>
+            <li>Tap <b>Install</b> on a certificate and trust it in <code>Settings › General › VPN &amp; Device Management</code>. If it won't open, try another.</li>
+            <li>Once SideStore is installed, remove the DNS profile.</li>
+          </ol>
+        </div>
+
+        <div class="controls">
+          <div class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input id="q" type="search" placeholder="Search certificates…" autocomplete="off" spellcheck="false">
+          </div>
+          <select id="sort" class="sort" aria-label="Sort certificates">
+            <option value="days">Most days left</option>
+            <option value="days-asc">Soonest to expire</option>
+            <option value="name">Name (A–Z)</option>
+          </select>
+        </div>
+
+        <div id="grid" class="grid">
+  {{CARDS}}
+        </div>
+        <p id="empty" class="empty">No certificates match your search.</p>
+      </div>
+    </details>
+  </main>
 
   <footer class="footer">
     {{REPO_NOTE}}
@@ -715,17 +752,18 @@
   sortSel.addEventListener('change',apply);
   apply();
 
-  /* TOS gate: the guide stays dimmed, and installs inert, until the box
-     is ticked. Acceptance is remembered per device. */
+  /* TOS gate: the guide stays dimmed and inert (App Store links, commands
+     and the certificate installs alike) until the box is ticked.
+     Acceptance is remembered per device. */
   var tos=document.getElementById('tosCheck');
   var guide=document.getElementById('guide');
   var TOS_KEY='si-tos-accepted';
   function tosLocked(){ return !tos.checked; }
   function applyTos(){
-    guide.classList.toggle('locked', tosLocked());
-    grid.classList.toggle('locked', tosLocked());
-    grid.setAttribute('aria-disabled', tosLocked()?'true':'false');
-    if('inert' in grid) grid.inert=tosLocked();
+    var locked=tosLocked();
+    guide.classList.toggle('locked', locked);
+    guide.setAttribute('aria-disabled', locked?'true':'false');
+    if('inert' in guide) guide.inert=locked;
     try{
       if(tos.checked) localStorage.setItem(TOS_KEY,'1');
       else localStorage.removeItem(TOS_KEY);
@@ -735,10 +773,16 @@
   tos.addEventListener('change',applyTos);
   /* Belt and braces for browsers without inert: swallow activations
      (including keyboard Enter) while locked. */
-  grid.addEventListener('click',function(e){
+  guide.addEventListener('click',function(e){
     if(tosLocked()){ e.preventDefault(); e.stopPropagation(); }
   },true);
   applyTos();
+
+  /* Legacy stays folded unless a link asks for it: sideinstaller.net/#legacy. */
+  var legacy=document.getElementById('legacy');
+  function openLegacy(){ if(location.hash==='#legacy') legacy.open=true; }
+  window.addEventListener('hashchange',openLegacy);
+  openLegacy();
 
   /* Tutorial popup: ask for a language, then a topic, then play the matching
      tutorials. One pane is on screen at a time — the answered one slides out as
@@ -937,9 +981,9 @@
     btn.copyTimer=setTimeout(function(){ label.textContent='Copy'; },1600);
   }
   /* The async clipboard needs a secure context; elsewhere fall back to
-     execCommand on a selection, which also leaves the address selected for
-     copying by hand if even that is refused. */
-  function copyAddress(btn){
+     execCommand on a selection, which also leaves the address or command
+     selected for copying by hand if even that is refused. */
+  function copyCode(btn){
     var code=btn.parentNode.querySelector('code');
     function fallback(){
       var range=document.createRange();
@@ -974,7 +1018,12 @@
     var tab=e.target.closest('.coin-tab'), copy=e.target.closest('.copy-btn');
     if(e.target.closest('[data-close]')) closeCrypto();
     else if(tab) showCoin(tab);
-    else if(copy) copyAddress(copy);
+    else if(copy) copyCode(copy);
+  });
+  /* The guide's commands copy the same way. */
+  guide.addEventListener('click',function(e){
+    var copy=e.target.closest && e.target.closest('.copy-btn');
+    if(copy) copyCode(copy);
   });
   document.addEventListener('keydown',function(e){
     if(e.key==='Escape' && !cryptoModal.hidden) closeCrypto();
