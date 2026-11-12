@@ -42,10 +42,12 @@ PARTIALS = ("head", "nav", "footer")
 VERSIONED = ("site.css", "site.js", "icons.svg")
 VERSIONED_LINK = re.compile(r'assets/(' + "|".join(re.escape(n) for n in VERSIONED) + r')(?=["#])')
 HEADLINE = "Install SideInstaller"
-TAGLINE = "Three steps in Safari, on the iPhone or iPad you want to set up."
+TAGLINE = "Three steps on the iPhone you want to set up. No computer, no certificate."
 BETA_HEADLINE = "Install the beta"
-BETA_TAGLINE = ("A beta test build, not the public release. Three steps in Safari, "
-                "on the iPhone or iPad you want to set up.")
+# siboot installs the latest stable release, so a beta only comes from the
+# certificates: beta.html opens Legacy ({{LEGACY_OPEN}}) and says so.
+BETA_TAGLINE = ("A beta test build, not the public release. Install it from a certificate "
+                "under Legacy: siboot's steps install the public release.")
 # The navigation's button, left off the pages it would only point back to.
 NAV_CTA = '<a class="btn btn-sm btn-primary" href="install.html">Install</a>'
 # Points at https://sideinstaller.net/install.html, so only that page shows it.
@@ -271,7 +273,8 @@ def build(*, root: Path, out: Path, static_dir: Path, site_url: str, signed_repo
                                 headline=headline, tagline=tagline, download_url=download,
                                 page_url=f"{host}/{page}", qr=qr, prefix=prefix, now=now)
         # The footer names the stable version; the page's own line names this release's.
-        tokens = {**shared, "{{PAGE_VERSION}}": _esc(app.get("version") or "—"), **tokens}
+        tokens = {**shared, "{{PAGE_VERSION}}": _esc(app.get("version") or "—"),
+                  "{{LEGACY_OPEN}}": " open" if channel == "beta" else "", **tokens}
         # An install page's own navigation link stands in for the Install button.
         (out / page).write_text(compose(install_page, parts, tokens, current="install.html" if channel == "stable" else "",
                                         cta=False, versions=versions), encoding="utf-8")

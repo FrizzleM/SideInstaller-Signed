@@ -13,9 +13,14 @@ official and may have been changed to steal the Apple ID typed into them.
 
 ## Installing
 
-Open [sideinstaller.net](https://sideinstaller.net/) on the iPhone and tap
-**Install** on a certificate marked **Valid**. Each card installs the IPA signed
-with that certificate, straight from the release here.
+[sideinstaller.net/install.html](https://sideinstaller.net/install.html) installs
+SideInstaller with [siboot](https://github.com/FrizzleM/siboot), from free App
+Store apps and with no certificate. The certificates signed here are its
+fallback, folded under **Legacy** on that page
+([install.html#legacy](https://sideinstaller.net/install.html#legacy) opens it),
+and the only way to a beta, so `beta.html` opens Legacy by itself: tap
+**Install** on one. Each row installs the IPA signed with that certificate,
+straight from the release here.
 
 Fixed links to the newest stable build, one per certificate:
 

@@ -692,12 +692,13 @@ kbd{
 .gate a:hover{text-decoration:underline; text-underline-offset:3px}
 
 .flow{margin-top:48px; transition:opacity var(--mid) var(--ease)}
-.flow.is-locked{opacity:.5}
+.flow.is-locked{opacity:.5; pointer-events:none}
 .flow-step{display:grid; grid-template-columns:28px minmax(0,1fr); column-gap:20px; padding-bottom:56px}
-.flow-step:last-child{padding-bottom:0}
+/* of-type, not last-child: Legacy follows the steps inside the flow. */
+.flow-step:last-of-type{padding-bottom:0}
 .flow-rail{position:relative}
 .flow-rail::after{content:""; position:absolute; left:13.5px; top:40px; bottom:-48px; width:1px; background:var(--hairline)}
-.flow-step:last-child .flow-rail::after{display:none}
+.flow-step:last-of-type .flow-rail::after{display:none}
 .flow-rail .node{margin-top:4px}
 .flow-step h2{font-size:clamp(24px,3vw,32px); line-height:1.15; font-weight:600; letter-spacing:-.02em}
 .flow-step h2 + p{margin-top:8px; max-width:38rem; color:var(--text-2)}
@@ -713,6 +714,24 @@ kbd{
 .howto b{color:var(--text); font-weight:500}
 .aside{max-width:40rem; padding:16px 20px; border-radius:var(--r-control); background:var(--control); font-size:15px; line-height:1.5; color:var(--text-2)}
 .aside b{color:var(--text); font-weight:500}
+/* Step 1's App Store links, and the commands to paste into rootshell and
+   Minis (drawn like Help's wallet addresses, further down). */
+.app-links{display:flex; flex-wrap:wrap; gap:12px}
+.cmd + .cmd{margin-top:8px}
+
+/* Legacy: the enterprise certificates, folded under the steps. Closed it's
+   one line, like a question on Help; open, the DNS profile and the list. */
+.legacy{max-width:40rem; margin-top:56px; border-top:1px solid var(--hairline); border-bottom:1px solid var(--hairline)}
+.legacy > summary{
+  display:flex; align-items:baseline; gap:12px; padding:20px 0; cursor:pointer;
+  list-style:none; font-size:19px; line-height:1.3; font-weight:500;
+}
+.legacy > summary::-webkit-details-marker{display:none}
+.legacy > summary small{font-size:15px; font-weight:400; color:var(--muted)}
+.legacy > summary .icon{align-self:center; margin-left:auto; font-size:18px; color:var(--muted); transition:transform var(--mid) var(--ease)}
+.legacy[open] > summary .icon{transform:rotate(180deg)}
+.legacy-body{padding:4px 0 32px}
+.legacy-body > * + *{margin-top:16px}
 @media (max-width:599px){
   .flow-step{grid-template-columns:minmax(0,1fr)}
   .flow-rail{display:flex; align-items:center; gap:12px; margin-bottom:12px}
@@ -741,7 +760,6 @@ kbd{
   background-repeat:no-repeat; background-position:right 14px center;
 }
 .certs{max-width:40rem; border:1px solid var(--hairline); border-radius:var(--r-card); background:var(--card); overflow:hidden}
-.certs.is-locked{pointer-events:none}
 .cert{display:flex; align-items:center; gap:16px; padding:16px 16px 16px 20px; border-top:1px solid var(--hairline)}
 .cert:first-child{border-top:0}
 .cert-main{flex:1; min-width:0}
@@ -805,13 +823,13 @@ kbd{
 .coin-qr{width:176px; border-radius:12px; overflow:hidden; line-height:0}
 .coin-qr svg{display:block; width:100%; height:auto}
 .coin-net{margin-top:12px}
-.coin-addr{
+.coin-addr,.cmd{
   display:flex; align-items:center; gap:12px; margin-top:12px; padding:8px 8px 8px 16px;
   border:1px solid var(--hairline); border-radius:var(--r-control); background:var(--control);
 }
 /* Breaks anywhere but never hyphenates: a hyphen copied by hand would break
-   the address. */
-.coin-addr code{
+   the address or the command. */
+.coin-addr code,.cmd code{
   flex:1; min-width:0; font:400 13px/1.5 var(--mono); color:var(--text);
   overflow-wrap:anywhere; -webkit-hyphens:none; hyphens:none; -webkit-user-select:all; user-select:all;
 }

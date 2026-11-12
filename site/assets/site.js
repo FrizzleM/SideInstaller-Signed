@@ -1,7 +1,7 @@
 /* sideinstaller.net: one script for every page. Each part looks for the
    elements it drives and does nothing on a page without them. Every page
    reads and works with this file missing; it adds the motion, the phone's
-   run, the certificate list's sorting and the terms gate. */
+   run, the certificate list's sorting, the terms gate and the Copy buttons. */
 (function () {
   "use strict";
 
@@ -245,7 +245,7 @@
     }
   })();
 
-  /* ---------- the certificate list and the terms gate (Install) ---------- */
+  /* ---------- the certificate list (Install, under Legacy) ---------- */
 
   var certs = $("#certs");
   if (certs) (function () {
@@ -312,33 +312,51 @@
     if (q) q.addEventListener("input", apply);
     if (sortSel) sortSel.addEventListener("change", apply);
     apply();
-
-    /* Terms gate: the steps stay dimmed, and the certificate installs inert,
-       until the box is ticked. Acceptance is remembered per device. */
-    var tos = $("#tosCheck"), flow = $("#flow");
-    var TOS_KEY = "si-tos-accepted";
-    if (tos && flow) {
-      var locked = function () { return !tos.checked; };
-      var applyTos = function () {
-        flow.classList.toggle("is-locked", locked());
-        certs.classList.toggle("is-locked", locked());
-        certs.setAttribute("aria-disabled", locked() ? "true" : "false");
-        if ("inert" in certs) certs.inert = locked();
-        try {
-          if (tos.checked) localStorage.setItem(TOS_KEY, "1");
-          else localStorage.removeItem(TOS_KEY);
-        } catch (e) {}
-      };
-      try { if (localStorage.getItem(TOS_KEY) === "1") tos.checked = true; } catch (e) {}
-      tos.addEventListener("change", applyTos);
-      /* Belt and braces for browsers without inert: swallow activations
-         (including keyboard Enter) while locked. */
-      certs.addEventListener("click", function (e) {
-        if (locked()) { e.preventDefault(); e.stopPropagation(); }
-      }, true);
-      applyTos();
-    }
   })();
+
+  /* ---------- the terms gate and Legacy (Install) ---------- */
+
+  /* Terms gate: the steps stay dimmed and inert (the App Store links, the
+     commands and the certificate installs alike) until the box is ticked.
+     Acceptance is remembered per device. */
+  var tos = $("#tosCheck"), flow = $("#flow");
+  var TOS_KEY = "si-tos-accepted";
+  if (tos && flow) {
+    var locked = function () { return !tos.checked; };
+    var applyTos = function () {
+      var off = locked();
+      flow.classList.toggle("is-locked", off);
+      flow.setAttribute("aria-disabled", off ? "true" : "false");
+      if ("inert" in flow) flow.inert = off;
+      try {
+        if (tos.checked) localStorage.setItem(TOS_KEY, "1");
+        else localStorage.removeItem(TOS_KEY);
+      } catch (e) {}
+    };
+    try { if (localStorage.getItem(TOS_KEY) === "1") tos.checked = true; } catch (e) {}
+    tos.addEventListener("change", applyTos);
+    /* Belt and braces for browsers without inert: swallow activations
+       (including keyboard Enter) while locked. */
+    flow.addEventListener("click", function (e) {
+      if (locked()) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+    applyTos();
+  }
+
+  /* Legacy stays folded unless a link points into it: #legacy, or #setup and
+     #installation, where the certificates were steps 1 and 2. A target inside
+     a closed <details> has no box to scroll to, so it's scrolled to once open. */
+  var legacy = $("#legacy");
+  if (legacy) {
+    var openLegacy = function () {
+      var target = location.hash.length > 1 ? doc.getElementById(location.hash.slice(1)) : null;
+      if (!target || !legacy.contains(target)) return;
+      legacy.open = true;
+      if (target !== legacy) target.scrollIntoView();
+    };
+    window.addEventListener("hashchange", openLegacy);
+    openLegacy();
+  }
 
   /* SideInstaller only installs onto the device this page is open on, so
      anything that isn't an iPhone or iPad is pointed to one. iPadOS reports
@@ -428,38 +446,45 @@
       next.focus();
     });
 
-    function copied(btn) {
-      var label = $("span", btn);
-      label.textContent = "Copied";
-      clearTimeout(btn.copyTimer);
-      btn.copyTimer = setTimeout(function () { label.textContent = "Copy"; }, 1600);
-    }
-    /* The async clipboard needs a secure context; elsewhere fall back to
-       execCommand on a selection, which also leaves the address selected for
-       copying by hand if even that is refused. */
-    function copyAddress(btn) {
-      var code = $("code", btn.parentNode);
-      function fallback() {
-        var range = doc.createRange();
-        range.selectNodeContents(code);
-        var sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-        var ok = false;
-        try { ok = doc.execCommand("copy"); } catch (e) {}
-        if (ok) copied(btn);
-      }
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(code.textContent).then(function () { copied(btn); }, fallback);
-      } else {
-        fallback();
-      }
-    }
     coins.addEventListener("click", function (e) {
       if (!e.target.closest) return;
       var tab = e.target.closest("[role=tab]"), copy = e.target.closest(".copy-btn");
       if (tab) showCoin(tab);
-      else if (copy) copyAddress(copy);
+      else if (copy) copyCode(copy);
     });
   })();
+
+  /* ---------- Copy buttons: the wallets (Help) and the commands (Install) ---------- */
+
+  function copied(btn) {
+    var label = $("span", btn);
+    label.textContent = "Copied";
+    clearTimeout(btn.copyTimer);
+    btn.copyTimer = setTimeout(function () { label.textContent = "Copy"; }, 1600);
+  }
+  /* The async clipboard needs a secure context; elsewhere fall back to
+     execCommand on a selection, which also leaves the address or command
+     selected for copying by hand if even that is refused. */
+  function copyCode(btn) {
+    var code = $("code", btn.parentNode);
+    function fallback() {
+      var range = doc.createRange();
+      range.selectNodeContents(code);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      var ok = false;
+      try { ok = doc.execCommand("copy"); } catch (e) {}
+      if (ok) copied(btn);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(code.textContent).then(function () { copied(btn); }, fallback);
+    } else {
+      fallback();
+    }
+  }
+  doc.addEventListener("click", function (e) {
+    var copy = e.target.closest && e.target.closest(".cmd .copy-btn");
+    if (copy) copyCode(copy);
+  });
 })();
