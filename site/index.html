@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SideInstaller: sideloading, without the computer</title>
+<meta name="description" content="SideInstaller sets up SideStore, LiveContainer, AltStore or Madeira on your iPhone or iPad. The pairing, signing and installing happen on the device, with no computer.">
+<meta property="og:site_name" content="SideInstaller">
+<meta property="og:title" content="Sideloading, without the computer">
+<meta property="og:description" content="SideInstaller sets up SideStore, LiveContainer, AltStore or Madeira on your iPhone or iPad, with no computer.">
+<meta property="og:image" content="https://sideinstaller.net/app-icon.png">
+<!-- This address used to be the install page; its step links still land on a step. -->
+<script>if(/^#(setup|installation|completion)$/.test(location.hash))location.replace("install.html"+location.hash)</script>
+{{HEAD}}
+</head>
+<body>
+{{NAV}}
+
+<main>
+
+  <section class="hero">
+    <div class="hero-field" aria-hidden="true"></div>
+    <div class="wrap hero-copy">
+      <h1 class="display rise">Sideloading, without the computer</h1>
+      <p class="lead rise" style="--i:1">SideInstaller sets up SideStore, LiveContainer, AltStore or Madeira on your iPhone or iPad. The pairing, signing and installing that used to need a Mac or PC happen on the device.</p>
+      <div class="hero-actions rise" style="--i:2">
+        <a class="btn btn-lg btn-primary" href="install.html">Install</a>
+        <a class="btn btn-lg btn-secondary" href="https://github.com/FrizzleM/SideInstaller" target="_blank" rel="noopener">
+          <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#github"/></svg>GitHub
+        </a>
+        <a class="link" href="https://youtu.be/W5afzxPfSwQ" target="_blank" rel="noopener" data-film="W5afzxPfSwQ" data-film-title="This is SideInstaller">
+          <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#play"/></svg>Watch the video
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-device">
+      <!-- The app's Install screen. "How it works" below copies this phone
+           and plays a run on it (assets/site.js). -->
+      <div class="phone" id="phone" role="img" aria-label="SideInstaller's Install screen on an iPhone, ready to install SideStore">
+        <div class="phone-frame">
+          <div class="phone-screen" aria-hidden="true">
+            <div class="p-status">
+              <span>9:41</span>
+              <span class="p-sys">
+                <svg><use href="assets/icons.svg#sys-signal"/></svg>
+                <svg><use href="assets/icons.svg#sys-wifi"/></svg>
+                <svg><use href="assets/icons.svg#sys-battery"/></svg>
+              </span>
+            </div>
+
+            <div class="p-page">
+              <div class="p-header">
+                <img class="p-logo" src="favicon-192.png" alt="">
+                <div class="p-titles">
+                  <div class="p-title">SideInstaller</div>
+                  <div class="p-state"><i></i><span>Tunnel connected</span></div>
+                </div>
+              </div>
+
+              <div class="p-card">
+                <div class="p-sectitle"><svg class="icon"><use href="assets/icons.svg#install"/></svg>Install</div>
+                <div class="p-field">
+                  <img src="assets/sidestore.png" alt="">
+                  <span>SideStore</span>
+                  <svg class="icon"><use href="assets/icons.svg#updown"/></svg>
+                </div>
+                <div class="p-seg"><span class="on">Stable</span><span>Nightly</span></div>
+              </div>
+
+              <div class="p-surface">
+                <div class="p-btn"><svg class="icon"><use href="assets/icons.svg#install"/></svg><span>Install SideStore</span></div>
+                <div class="p-run">
+                  <div class="p-run-head">
+                    <b>Installing</b>
+                    <span class="p-pct">0%</span>
+                    <span class="p-round"><svg class="icon"><use href="assets/icons.svg#chevron-down"/></svg></span>
+                    <span class="p-round"><svg class="icon"><use href="assets/icons.svg#x"/></svg></span>
+                  </div>
+                  <div class="p-bar"><i></i></div>
+                  <div class="p-step">
+                    <span class="p-node"><svg class="icon"><use href="assets/icons.svg#check"/></svg></span>
+                    <span class="p-step-text"><b>Connect the VPN</b><small>Step 1 of 8</small></span>
+                    <span class="p-badge">Action needed</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-credit">an app by Frizzle</div>
+            </div>
+
+            <div class="p-tabs">
+              <span class="on"><svg class="icon"><use href="assets/icons.svg#install"/></svg>Install</span>
+              <span><svg class="icon"><use href="assets/icons.svg#wrench"/></svg>Tools</span>
+              <span><svg class="icon"><use href="assets/icons.svg#info"/></svg>About</span>
+            </div>
+
+            <div class="p-scrim"></div>
+
+            <div class="p-sheet">
+              <div class="p-grab"></div>
+              <h4>Sign in with your Apple ID</h4>
+              <p>Don't worry, these are stored locally</p>
+              <div class="p-input">j.appleseed@icloud.com</div>
+              <div class="p-input is-secret">●●●●●●●●●●●●</div>
+              <div class="p-btn">Continue</div>
+            </div>
+
+            <div class="p-popup">
+              <div class="p-popup-head">
+                <svg class="icon"><use href="assets/icons.svg#lock"/></svg>
+                <b>Pairing code</b>
+                <span class="p-round"><svg class="icon"><use href="assets/icons.svg#x"/></svg></span>
+              </div>
+              <div class="p-digits"><span>4</span><span>8</span><span>2</span><span>0</span><span>1</span><span>7</span></div>
+              <p>Type this into the prompt in Settings.</p>
+            </div>
+
+            <div class="p-home"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="apps">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <h2 class="headline">Pick what goes on your iPhone</h2>
+        <p class="lead">SideInstaller downloads the app from the project that makes it, signs it with your Apple ID and installs it.</p>
+      </div>
+      <div class="apps">
+        <article class="app is-wide" data-reveal>
+          <img src="assets/sidestore.png" width="80" height="80" alt="">
+          <h3 class="title">SideStore</h3>
+          <p>An app store for sideloaded apps. It installs them and keeps them refreshed, all on the device.</p>
+        </article>
+        <article class="app is-wide" data-reveal style="--i:1">
+          <img src="assets/livecontainer.png" width="80" height="80" alt="">
+          <h3 class="title">LiveContainer + SideStore</h3>
+          <p>Runs your apps inside one container, so they don't count toward a free Apple ID's three-app limit. SideStore is built in.</p>
+        </article>
+        <article class="app" data-reveal>
+          <img src="assets/altstore.png" width="56" height="56" alt="">
+          <h3 class="title">AltStore</h3>
+          <p>AltStore Classic, with the pairing file already in place for its Remote AltServer.</p>
+        </article>
+        <article class="app" data-reveal style="--i:1">
+          <img src="assets/madeira.png" width="56" height="56" alt="">
+          <h3 class="title">Madeira</h3>
+          <p>Runs Windows PC games on iPhone and iPad.</p>
+        </article>
+        <article class="app" data-reveal style="--i:2">
+          <span class="app-glyph"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#file"/></svg></span>
+          <h3 class="title">Custom .ipa</h3>
+          <p>Any .ipa of your own, picked from Files or pasted as a link.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="how">
+    <div class="wrap how">
+      <div class="section-head" data-reveal>
+        <h2 class="headline">One run, start to finish</h2>
+        <p class="lead">No cable and no desktop tool. What a computer used to do is a few taps in the app.</p>
+      </div>
+
+      <!-- assets/site.js makes the track tall and pins the stage while the
+           page scrolls through it; the scroll plays the run on the phone. -->
+      <div class="how-track" id="howTrack">
+        <div class="how-stage">
+          <div class="how-copy">
+      <div class="step-bar" id="stepBar"></div>
+
+      <ol class="steps" id="steps">
+        <li class="step is-active">
+          <button type="button" class="step-btn">
+            <span class="step-rail"><span class="node"><span>1</span><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#check"/></svg></span></span>
+            <span class="step-text"><b>Connect LocalDevVPN</b><span>An app from the App Store that gives the iPhone a tunnel back to itself. That tunnel is how SideInstaller reaches the device without a computer.</span></span>
+          </button>
+        </li>
+        <li class="step">
+          <button type="button" class="step-btn">
+            <span class="step-rail"><span class="node"><span>2</span><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#check"/></svg></span></span>
+            <span class="step-text"><b>Sign in with your Apple ID</b><span>It signs the app, the way Apple signs one for a developer. Your details are stored on the iPhone and used only to sign and install.</span></span>
+          </button>
+        </li>
+        <li class="step">
+          <button type="button" class="step-btn">
+            <span class="step-rail"><span class="node"><span>3</span><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#check"/></svg></span></span>
+            <span class="step-text"><b>Tap Install</b><span>On iOS 27 the iPhone pairs with itself. It shows a code, you type it into the prompt in Settings, and the run carries on.</span></span>
+          </button>
+        </li>
+        <li class="step">
+          <button type="button" class="step-btn">
+            <span class="step-rail"><span class="node"><span>4</span><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#check"/></svg></span></span>
+            <span class="step-text"><b>Open your new app</b><span>SideInstaller downloads the app, signs it, installs it and hands it the pairing file, so it's ready the first time you open it.</span></span>
+          </button>
+        </li>
+      </ol>
+          </div>
+
+          <div class="how-phone" id="demo"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="privacy">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <h2 class="headline">Your Apple ID stays on your iPhone</h2>
+      </div>
+      <p class="lit">
+        <span>It's used on the device, only to sign and install your apps.</span>
+        <span>Nothing is logged or collected, because there's no SideInstaller server to send it to.</span>
+        <span>No analytics, and no account to make.</span>
+        <span>And the code is public, so anyone can check.</span>
+      </p>
+      <div class="source" data-reveal>
+        <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#shield"/></svg>
+        <div>
+          <p><b>Only install it from here.</b> SideInstaller is published on sideinstaller.net and in its GitHub repository, and nowhere else. The code is open, so anyone can rebuild it with a change that steals the Apple ID typed into it. A copy from any other site, sideinstaller.com included, isn't safe to sign in to.</p>
+          <a class="link" href="https://github.com/FrizzleM/SideInstaller" target="_blank" rel="noopener">Read the source<svg class="icon" aria-hidden="true"><use href="assets/icons.svg#chevron-right"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="tools">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <h2 class="headline">Tools for after the install</h2>
+        <p class="lead">The app's Tools tab holds the jobs that come up once you sideload.</p>
+      </div>
+      <div class="tools">
+        <article class="tool" data-reveal>
+          <img src="assets/tool-side-by-side.png" width="56" height="56" alt="">
+          <h3>Side by Side</h3>
+          <p>Set up someone else's iPhone from yours</p>
+        </article>
+        <article class="tool" data-reveal style="--i:1">
+          <img src="assets/tool-pairing.png" width="56" height="56" alt="">
+          <h3>Pairing</h3>
+          <p>Make a pairing file and pass it to the apps that need one</p>
+        </article>
+        <article class="tool" data-reveal style="--i:2">
+          <img src="assets/tool-certificates.png" width="56" height="56" alt="">
+          <h3>Certificates</h3>
+          <p>See your signing certificates, revoke one or export it</p>
+        </article>
+        <article class="tool" data-reveal>
+          <img src="assets/tool-entitlements.png" width="56" height="56" alt="">
+          <h3>Entitlements</h3>
+          <p>Ask Apple to turn on capabilities for an App ID</p>
+        </article>
+        <article class="tool" data-reveal style="--i:1">
+          <img src="assets/tool-location.png" width="56" height="56" alt="">
+          <h3>Location spoofing</h3>
+          <p>Set a location, save places and drive GPX routes</p>
+        </article>
+        <article class="tool" data-reveal style="--i:2">
+          <img src="assets/tool-apps.png" width="56" height="56" alt="">
+          <h3>Sideloaded apps</h3>
+          <p>See what's installed and when it expires</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="compatibility">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <h2 class="headline">Made for iOS 27</h2>
+        <p class="lead">From iOS 27 the iPhone can pair with itself, which is what lets SideInstaller work alone. Earlier versions need one file made on a computer first.</p>
+      </div>
+      <dl class="specs prose">
+        <div class="spec" data-reveal>
+          <dt><i class="dot good"></i>iOS 27 or later</dt>
+          <dd><b>Works on its own.</b> No computer at any point.</dd>
+        </div>
+        <div class="spec" data-reveal>
+          <dt><i class="dot warn"></i>iOS 26.4 to 26.7</dt>
+          <dd><b>Works with a remote pairing file</b>, made once on a computer. <a href="https://github.com/FrizzleM/SideInstaller#ios-264-to-26x-a-remote-pairing-file" target="_blank" rel="noopener">How to make one</a></dd>
+        </div>
+        <div class="spec" data-reveal>
+          <dt><i class="dot warn"></i>iOS 17.4 to 26.3</dt>
+          <dd><b>Works with a pairing file</b>, made once on a computer. <a href="https://docs.sidestore.io/docs/advanced/alternative#pairing" target="_blank" rel="noopener">How to make one</a></dd>
+        </div>
+        <div class="spec" data-reveal>
+          <dt><i class="dot bad"></i>Below iOS 17.4</dt>
+          <dd>Not supported.</dd>
+        </div>
+      </dl>
+      <ul class="needs" data-reveal>
+        <li><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#phone"/></svg>An iPhone or iPad</li>
+        <li><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#wifi"/></svg>Wi-Fi, the first time only</li>
+        <li><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#person"/></svg>An Apple ID</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap" id="start">
+    <div class="cta" data-reveal>
+      <img class="app-icon" src="app-icon.png" width="72" height="72" alt="">
+      <h2 class="headline">Start on your iPhone</h2>
+      <p class="lead">Open sideinstaller.net in Safari on the iPhone or iPad you want to set up.</p>
+      <div class="hero-actions">
+        <a class="btn btn-lg btn-primary" href="install.html">Install</a>
+        <a class="link" href="help.html">Get help<svg class="icon" aria-hidden="true"><use href="assets/icons.svg#chevron-right"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+{{FOOTER}}
+</body>
+</html>

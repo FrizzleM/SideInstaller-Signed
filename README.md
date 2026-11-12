@@ -13,12 +13,14 @@ official and may have been changed to steal the Apple ID typed into them.
 
 ## Installing
 
-[sideinstaller.net](https://sideinstaller.net/) installs SideInstaller with
-[siboot](https://github.com/FrizzleM/siboot), from free App Store apps and with no
-certificate. The certificates signed here are its fallback, folded under
-**Legacy** on that page ([sideinstaller.net/#legacy](https://sideinstaller.net/#legacy)
-opens it): tap **Install** on one. Each card installs the IPA signed with that
-certificate, straight from the release here.
+[sideinstaller.net/install.html](https://sideinstaller.net/install.html) installs
+SideInstaller with [siboot](https://github.com/FrizzleM/siboot), from free App
+Store apps and with no certificate. The certificates signed here are its
+fallback, folded under **Legacy** on that page
+([install.html#legacy](https://sideinstaller.net/install.html#legacy) opens it),
+and the only way to a beta, so `beta.html` opens Legacy by itself: tap
+**Install** on one. Each row installs the IPA signed with that certificate,
+straight from the release here.
 
 Fixed links to the newest stable build, one per certificate:
 
@@ -54,9 +56,20 @@ it needs go into one temporary keychain, and the copies are signed in parallel
 from one unpacked IPA. A full release takes a few seconds of signing. The page
 is redeployed only when something on it changed.
 
-[`deploy-pages`](.github/workflows/deploy-pages.yml) builds `index.html` from
-the latest stable release and `beta.html` from the newest prerelease, and
-deploys them to GitHub Pages at sideinstaller.net.
+[`deploy-pages`](.github/workflows/deploy-pages.yml) builds the site and
+deploys it to GitHub Pages at sideinstaller.net: `install.html` from the latest
+stable release, `beta.html` from the newest prerelease, and the overview
+(`index.html`) and help pages around them. The pages are the files in
+[`site/`](site), which share a head, a navigation bar and a footer
+(`site/partials/`) and one stylesheet and script (`site/assets/`).
+
+To look at the site before deploying it, build it from a dry run's output and
+serve the folder:
+
+```sh
+python3 -m signer site --out _site --static-dir ../SideInstaller --from-dir <dry run output>
+python3 -m http.server --directory _site
+```
 
 No IPA is ever committed, here or in the main repository.
 

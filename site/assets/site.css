@@ -1,0 +1,853 @@
+/* sideinstaller.net
+
+   The palette, radii and status colours are the app's (ios-app/Theme.swift in
+   FrizzleM/SideInstaller): one near-black ramp, one blue, an off-white main
+   button. The page stays quiet so the phone, an install's progress and the
+   icons of the apps it installs are what the eye lands on. Depth comes from a
+   step between surfaces and a hairline edge, never a glow.
+
+   Spacing sits on a 4px grid. One easing curve, three durations. */
+
+:root{
+  /* ramp */
+  --page:#0b0c0f;
+  --card:#141518;
+  --raised:#1c1e22;
+  --control:rgba(255,255,255,.06);
+  --control-hover:rgba(255,255,255,.1);
+  --hairline:rgba(255,255,255,.08);
+  --hairline-strong:rgba(255,255,255,.16);
+  --off-white:#edeef0;
+  /* text: primary, secondary, muted */
+  --text:#f2f3f5;
+  --text-2:#a4a8b0;
+  --muted:#80858d;
+  /* colour */
+  --accent:#2f80ff;
+  --positive:#4cc38a;
+  --warning:#e5a140;
+  --negative:#e5484d;
+  /* shape */
+  --r-control:12px;
+  --r-card:20px;
+  --r-panel:28px;
+  /* motion */
+  --ease:cubic-bezier(.22,1,.36,1);
+  --fast:.15s;
+  --mid:.3s;
+  --slow:.7s;
+  /* type */
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  /* layout */
+  --gutter:24px;
+  --max:1080px;
+  --nav-h:52px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none !important}
+html{
+  -webkit-text-size-adjust:100%; color-scheme:dark; background:var(--page);
+  scroll-padding-top:calc(var(--nav-h) + 24px);
+}
+body{
+  margin:0; min-height:100vh; min-height:100svh; overflow-x:clip;
+  color:var(--text); background:var(--page);
+  font:400 17px/1.47 var(--sans);
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+}
+h1,h2,h3,p,ol,ul,figure{margin:0}
+ol,ul{padding:0; list-style:none}
+a{color:inherit}
+img{max-width:100%}
+button{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+::selection{background:rgba(47,128,255,.35)}
+
+.wrap{
+  width:100%; max-width:calc(var(--max) + 2 * var(--gutter)); margin-inline:auto;
+  padding-inline:max(var(--gutter),env(safe-area-inset-left)) max(var(--gutter),env(safe-area-inset-right));
+}
+.icon{
+  width:1em; height:1em; flex:none;
+  fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round;
+}
+.visually-hidden{
+  position:absolute; width:1px; height:1px; overflow:hidden; white-space:nowrap;
+  clip-path:inset(50%);
+}
+
+/* ---------- type ---------- */
+
+.display{
+  font-size:clamp(40px,6.6vw,80px); line-height:1.04; font-weight:600; letter-spacing:-.03em;
+  text-wrap:balance;
+}
+.headline{
+  font-size:clamp(32px,4.6vw,56px); line-height:1.07; font-weight:600; letter-spacing:-.025em;
+  text-wrap:balance;
+}
+.title{font-size:21px; line-height:1.2; font-weight:600; letter-spacing:-.01em}
+.lead{
+  font-size:clamp(19px,1.9vw,21px); line-height:1.4; color:var(--text-2);
+  text-wrap:pretty;
+}
+.small{font-size:14px; line-height:1.43; color:var(--text-2)}
+.meta{font:400 13px/1.4 var(--mono); color:var(--muted); font-variant-numeric:tabular-nums}
+kbd{
+  display:inline-block; padding:0 6px; border-radius:6px;
+  font:400 .88em/1.5 var(--sans); color:var(--text); white-space:nowrap;
+  background:var(--control); box-shadow:inset 0 0 0 1px var(--hairline);
+}
+
+/* ---------- buttons and links ---------- */
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  height:44px; padding:0 20px; border:1px solid transparent; border-radius:22px;
+  font:500 15px/1 var(--sans); text-decoration:none; white-space:nowrap; cursor:pointer;
+  transition:background-color var(--fast) var(--ease), border-color var(--fast) var(--ease),
+             color var(--fast) var(--ease), opacity var(--fast) var(--ease), transform var(--fast) var(--ease);
+}
+.btn:active{transform:scale(.98)}
+.btn .icon{font-size:18px}
+.btn-primary{background:var(--off-white); color:var(--page)}
+.btn-primary:hover{background:#fff}
+.btn-secondary{background:var(--control); border-color:var(--hairline); color:var(--text)}
+.btn-secondary:hover{background:var(--control-hover)}
+.btn-lg{height:52px; padding:0 28px; border-radius:26px; font-size:17px}
+.btn-sm{height:32px; padding:0 16px; border-radius:16px; font-size:14px}
+.btn-block{display:flex; width:100%}
+
+.link{
+  display:inline-flex; align-items:center; gap:4px; padding:0; border:0; background:none;
+  color:var(--accent); font:inherit; text-decoration:none; cursor:pointer;
+}
+.link .icon{font-size:.82em; stroke-width:2}
+.link:hover{text-decoration:underline; text-underline-offset:3px}
+.prose a{color:var(--accent); text-decoration:none}
+.prose a:hover{text-decoration:underline; text-underline-offset:3px}
+
+/* ---------- status dot: the app's mark for how something stands ---------- */
+
+.dot{
+  display:inline-block; width:6px; height:6px; flex:none; border-radius:50%;
+  background:var(--muted); vertical-align:middle;
+}
+.dot.good{background:var(--positive)}
+.dot.warn{background:var(--warning)}
+.dot.bad{background:var(--negative)}
+
+/* ---------- navigation ---------- */
+
+.nav{
+  position:sticky; top:0; z-index:40; height:var(--nav-h);
+  background:rgba(11,12,15,.72);
+  -webkit-backdrop-filter:saturate(180%) blur(20px); backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:1px solid transparent;
+  transition:border-color var(--mid) var(--ease);
+}
+.nav.is-scrolled,.nav.is-open{border-bottom-color:var(--hairline)}
+.nav-in{height:100%; display:flex; align-items:center; gap:24px}
+.brand{
+  display:flex; align-items:center; gap:10px; margin-right:auto;
+  font-size:17px; font-weight:600; letter-spacing:-.01em; text-decoration:none;
+}
+.brand img{width:28px; height:28px; border-radius:7px; box-shadow:0 0 0 1px var(--hairline)}
+/* The icon in greys, the way the app draws its logo art. */
+.app-icon{filter:grayscale(1)}
+.nav-links{display:flex; align-items:center; gap:28px; font-size:14px}
+.nav-links a{color:var(--text-2); text-decoration:none; transition:color var(--fast) var(--ease)}
+.nav-links a:hover,.nav-links a[aria-current]{color:var(--text)}
+.nav-menu{
+  display:none; width:32px; height:32px; padding:0; border:0; border-radius:16px;
+  background:none; cursor:pointer; place-items:center; font-size:20px;
+}
+.nav-menu .icon{transition:transform var(--mid) var(--ease)}
+
+@media (max-width:719px){
+  .nav-in{gap:12px}
+  .nav-menu{display:grid}
+  .nav.is-open .nav-menu .icon{transform:rotate(90deg)}
+  .nav-links{
+    position:absolute; top:var(--nav-h); left:0; right:0;
+    flex-direction:column; align-items:stretch; gap:0;
+    padding:4px var(--gutter) 12px; font-size:17px;
+    background:var(--page); border-bottom:1px solid var(--hairline);
+    opacity:0; visibility:hidden; transform:translateY(-8px);
+    transition:opacity var(--mid) var(--ease), transform var(--mid) var(--ease), visibility 0s linear var(--mid);
+  }
+  .nav.is-open .nav-links{opacity:1; visibility:visible; transform:none; transition-delay:0s}
+  .nav-links a{padding:12px 0; color:var(--text)}
+  .nav-links a + a{border-top:1px solid var(--hairline)}
+}
+
+/* ---------- entrances ----------
+   The hero settles in once on load. Further down, a block fades up the first
+   time it scrolls into view; without JavaScript everything is simply there. */
+
+@keyframes rise{from{opacity:0; transform:translateY(12px)}}
+@keyframes phone-in{from{opacity:0; transform:translateY(48px)}}
+.rise{animation:rise var(--slow) var(--ease) both; animation-delay:calc(var(--i,0) * 80ms)}
+
+.js [data-reveal]{opacity:0; transform:translateY(12px)}
+.js [data-reveal].in{
+  opacity:1; transform:none;
+  transition:opacity var(--slow) var(--ease), transform var(--slow) var(--ease);
+  transition-delay:calc(var(--i,0) * 60ms);
+}
+
+/* ---------- sections ---------- */
+
+.section{padding-block:clamp(80px,11vw,144px)}
+.section-head{max-width:720px; margin-bottom:clamp(40px,5vw,64px)}
+.section-head .lead{margin-top:16px; max-width:36rem}
+
+/* ---------- hero ---------- */
+
+.hero{position:relative; overflow:hidden; text-align:center; padding-top:clamp(48px,8vw,104px)}
+.hero-copy{position:relative; z-index:1}
+.hero .display{max-width:12em; margin-inline:auto}
+.hero .lead{max-width:36rem; margin:20px auto 0}
+.hero-actions{
+  display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:16px 24px;
+  margin-top:32px;
+}
+/* The app icon's dot field, once, behind the phone. */
+.hero-field{
+  position:absolute; z-index:0; left:50%; bottom:-28%; width:min(1500px,250vw); aspect-ratio:1;
+  transform:translateX(-50%); pointer-events:none;
+  background:url("dots.svg") center/contain no-repeat;
+  -webkit-mask-image:radial-gradient(closest-side,#000 18%,transparent 76%);
+  mask-image:radial-gradient(closest-side,#000 18%,transparent 76%);
+}
+/* The phone rises from the fold and runs past it. */
+.hero-device{
+  position:relative; z-index:1; display:flex; justify-content:center;
+  height:clamp(320px,44vh,460px); margin-top:clamp(48px,6vw,72px); overflow:hidden;
+  -webkit-mask-image:linear-gradient(#000 56%,transparent);
+  mask-image:linear-gradient(#000 56%,transparent);
+}
+.hero-device .phone{--phone-w:clamp(264px,30vw,340px); animation:phone-in 1.1s var(--ease) .2s both}
+
+/* ---------- the phone ----------
+   The app's own Install screen, rebuilt to its numbers. Every size is in the
+   app's points, scaled by --p so the whole device follows --phone-w. */
+
+.phone{
+  --phone-w:320px; --p:calc(var(--phone-w) / 402);
+  position:relative; flex:none; width:var(--phone-w);
+  -webkit-user-select:none; user-select:none;
+}
+.phone-frame{
+  padding:calc(11 * var(--p)); border-radius:calc(66 * var(--p));
+  background:#050506;
+  box-shadow:0 0 0 1px #33353b, 0 0 0 calc(3 * var(--p)) #1a1b1f, 0 0 0 calc(3 * var(--p) + 1px) #2a2c31;
+}
+.phone-screen{
+  position:relative; aspect-ratio:402/874; overflow:hidden;
+  border-radius:calc(55 * var(--p)); background:var(--page); color:#fff;
+  font-size:calc(17 * var(--p)); line-height:1.3; text-align:left;
+}
+.p-status{
+  position:absolute; inset:0 0 auto; z-index:5; height:calc(54 * var(--p));
+  display:flex; align-items:center; justify-content:space-between;
+  padding:calc(6 * var(--p)) calc(30 * var(--p)) 0 calc(46 * var(--p));
+  font-size:calc(17 * var(--p)); font-weight:600; letter-spacing:-.01em;
+}
+.p-status::before{
+  content:""; position:absolute; left:50%; top:calc(11 * var(--p));
+  width:calc(124 * var(--p)); height:calc(36 * var(--p)); margin-left:calc(-62 * var(--p));
+  border-radius:calc(18 * var(--p)); background:#000;
+}
+.p-sys{display:flex; align-items:center; gap:calc(6 * var(--p))}
+.p-sys svg{width:calc(19 * var(--p)); height:calc(19 * var(--p)); fill:none; stroke:currentColor; stroke-linecap:round}
+.p-sys svg:last-child{width:calc(27 * var(--p))}
+
+.p-page{
+  position:absolute; inset:0; padding:calc(70 * var(--p)) calc(16 * var(--p)) 0;
+  display:flex; flex-direction:column; gap:calc(16 * var(--p));
+  transition:opacity var(--mid) var(--ease);
+}
+.p-header{display:flex; flex-direction:column; align-items:center; gap:calc(16 * var(--p))}
+.p-logo{
+  width:calc(72 * var(--p)); height:calc(72 * var(--p)); border-radius:calc(19 * var(--p));
+  filter:grayscale(1); box-shadow:0 0 0 1px var(--hairline);
+}
+.p-titles{display:flex; flex-direction:column; align-items:center; gap:calc(8 * var(--p))}
+.p-title{font-size:calc(34 * var(--p)); line-height:1.2; font-weight:600; letter-spacing:-.02em}
+.p-state{
+  display:flex; align-items:center; gap:calc(8 * var(--p)); padding:calc(4 * var(--p)) 0;
+  font-size:calc(13 * var(--p)); color:rgba(235,235,245,.6);
+}
+.p-state i{
+  width:calc(6 * var(--p)); height:calc(6 * var(--p)); border-radius:50%; background:var(--positive);
+  transition:background-color var(--mid) var(--ease);
+}
+.p-state.is-off i{background:var(--muted)}
+
+.p-card{
+  padding:calc(20 * var(--p)); border-radius:calc(20 * var(--p));
+  background:var(--card); box-shadow:inset 0 0 0 1px var(--hairline);
+}
+.p-sectitle{
+  display:flex; align-items:center; gap:calc(6 * var(--p)); margin-bottom:calc(12 * var(--p));
+  font-size:calc(15 * var(--p)); font-weight:500; color:rgba(235,235,245,.6);
+}
+.p-sectitle .icon{font-size:calc(16 * var(--p)); color:var(--muted)}
+.p-field{
+  display:flex; align-items:center; gap:calc(12 * var(--p)); height:calc(44 * var(--p));
+  padding:0 calc(12 * var(--p)) 0 calc(8 * var(--p)); border-radius:calc(12 * var(--p));
+  background:var(--control);
+}
+.p-field img{
+  width:calc(28 * var(--p)); height:calc(28 * var(--p)); border-radius:calc(7.5 * var(--p));
+  box-shadow:0 0 0 1px var(--hairline);
+}
+.p-field span{flex:1}
+.p-field .icon{font-size:calc(15 * var(--p)); color:rgba(235,235,245,.6); stroke-width:2}
+.p-seg{
+  display:flex; height:calc(32 * var(--p)); margin-top:calc(12 * var(--p)); padding:calc(2 * var(--p));
+  border-radius:calc(9 * var(--p)); background:rgba(118,118,128,.24);
+  font-size:calc(13 * var(--p)); font-weight:500;
+}
+.p-seg span{flex:1; display:grid; place-items:center; border-radius:calc(7 * var(--p))}
+.p-seg .on{background:#636366; font-weight:600}
+
+/* The Install button, which grows into the run's progress. */
+.p-surface{position:relative; height:calc(52 * var(--p))}
+.p-btn,.p-run{
+  position:absolute; inset:0 0 auto;
+  transition:opacity var(--mid) var(--ease), transform var(--mid) var(--ease);
+}
+.p-btn{
+  height:calc(52 * var(--p)); display:flex; align-items:center; justify-content:center; gap:calc(8 * var(--p));
+  border-radius:calc(12 * var(--p)); background:var(--off-white); color:var(--page); font-weight:600;
+}
+.p-btn .icon{font-size:calc(19 * var(--p)); stroke-width:2}
+.p-run{
+  padding:calc(20 * var(--p)); border-radius:calc(20 * var(--p));
+  background:var(--card); box-shadow:inset 0 0 0 1px var(--hairline);
+  opacity:0; transform:scale(.98); pointer-events:none;
+}
+.phone.is-running .p-btn{opacity:0; transform:scale(.98)}
+.phone.is-running .p-run{opacity:1; transform:none}
+.p-run-head{display:flex; align-items:center; gap:calc(8 * var(--p)); font-weight:600}
+.p-run-head b{flex:1; font-weight:600}
+.p-pct{font-family:var(--mono); font-variant-numeric:tabular-nums; color:var(--accent); transition:color var(--mid) var(--ease)}
+.p-round{
+  width:calc(28 * var(--p)); height:calc(28 * var(--p)); display:grid; place-items:center;
+  border-radius:50%; background:var(--control); color:rgba(235,235,245,.6);
+}
+.p-round .icon{font-size:calc(13 * var(--p)); stroke-width:2.4}
+.p-bar{
+  height:calc(8 * var(--p)); margin:calc(16 * var(--p)) 0; overflow:hidden;
+  border-radius:calc(4 * var(--p)); background:var(--control);
+}
+.p-bar i{
+  display:block; height:100%; border-radius:inherit; background:var(--accent);
+  transform-origin:0 50%; transform:scaleX(.02);
+  transition:background-color var(--mid) var(--ease);
+}
+.p-step{display:flex; align-items:center; gap:calc(12 * var(--p)); height:calc(44 * var(--p))}
+.p-node{
+  position:relative; width:calc(24 * var(--p)); height:calc(24 * var(--p)); flex:none;
+  display:grid; place-items:center; border-radius:50%;
+  box-shadow:inset 0 0 0 1px var(--accent); color:rgba(235,235,245,.6);
+  transition:box-shadow var(--mid) var(--ease), background-color var(--mid) var(--ease);
+}
+.p-node .icon{font-size:calc(12 * var(--p)); stroke-width:2.6; opacity:0; transition:opacity var(--mid) var(--ease)}
+.p-node::after{
+  content:""; width:calc(6 * var(--p)); height:calc(6 * var(--p)); border-radius:50%; background:var(--accent);
+  position:absolute; transition:opacity var(--mid) var(--ease), background-color var(--mid) var(--ease);
+}
+.p-step-text{flex:1; min-width:0; display:flex; flex-direction:column; gap:calc(2 * var(--p))}
+.p-step-text b{font-size:calc(15 * var(--p)); font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.p-step-text small{font:400 calc(12 * var(--p))/1.3 var(--mono); color:var(--muted)}
+.p-badge{font-size:calc(12 * var(--p)); font-weight:500; color:var(--warning); opacity:0; transition:opacity var(--mid) var(--ease)}
+.phone.is-waiting .p-node{box-shadow:inset 0 0 0 1px rgba(229,161,64,.4); background:rgba(229,161,64,.14)}
+.phone.is-waiting .p-node::after{background:var(--warning)}
+.phone.is-waiting .p-badge{opacity:1}
+.phone.is-done .p-pct{color:var(--positive)}
+.phone.is-done .p-bar i{background:var(--positive)}
+.phone.is-done .p-node{box-shadow:inset 0 0 0 1px var(--hairline); background:var(--control)}
+.phone.is-done .p-node::after{opacity:0}
+.phone.is-done .p-node .icon{opacity:1}
+.p-credit{margin-top:calc(-4 * var(--p)); text-align:center; font-size:calc(12 * var(--p)); color:var(--muted); transition:transform var(--mid) var(--ease)}
+.phone.is-running .p-credit{transform:translateY(calc(100 * var(--p)))}
+
+/* Tab bar and home indicator. */
+.p-tabs{
+  position:absolute; left:50%; bottom:calc(26 * var(--p)); z-index:2;
+  display:flex; width:calc(276 * var(--p)); height:calc(62 * var(--p)); margin-left:calc(-138 * var(--p));
+  padding:calc(4 * var(--p)); border-radius:calc(31 * var(--p));
+  background:rgba(34,36,41,.92); box-shadow:inset 0 0 0 1px var(--hairline);
+  font-size:calc(10 * var(--p)); font-weight:500; color:rgba(235,235,245,.6);
+}
+.p-tabs span{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:calc(3 * var(--p));
+  border-radius:calc(27 * var(--p));
+}
+.p-tabs .icon{font-size:calc(22 * var(--p)); stroke-width:1.7}
+.p-tabs .on{background:rgba(255,255,255,.1); color:var(--accent)}
+.p-home{
+  position:absolute; left:50%; bottom:calc(8 * var(--p)); z-index:6;
+  width:calc(139 * var(--p)); height:calc(5 * var(--p)); margin-left:calc(-69.5 * var(--p));
+  border-radius:calc(3 * var(--p)); background:rgba(255,255,255,.5);
+}
+
+/* What floats over the app: the dimmed backdrop, the Apple ID sheet and the
+   pairing code. */
+.p-scrim{
+  position:absolute; inset:0; z-index:3; background:rgba(0,0,0,.55);
+  opacity:0; transition:opacity var(--mid) var(--ease);
+}
+.phone.has-sheet .p-scrim,.phone.has-popup .p-scrim{opacity:1}
+.p-sheet{
+  position:absolute; inset:auto 0 0; z-index:4;
+  padding:calc(12 * var(--p)) calc(20 * var(--p)) calc(44 * var(--p));
+  border-radius:calc(32 * var(--p)) calc(32 * var(--p)) 0 0;
+  background:var(--raised); box-shadow:inset 0 1px 0 var(--hairline);
+  transform:translateY(102%); transition:transform .5s var(--ease);
+}
+.phone.has-sheet .p-sheet{transform:none}
+.p-grab{width:calc(36 * var(--p)); height:calc(5 * var(--p)); margin:0 auto calc(20 * var(--p)); border-radius:calc(3 * var(--p)); background:rgba(255,255,255,.2)}
+.p-sheet h4{margin:0; font-size:calc(22 * var(--p)); line-height:1.25; font-weight:600; letter-spacing:-.01em}
+.p-sheet p{margin:calc(4 * var(--p)) 0 calc(20 * var(--p)); font-size:calc(15 * var(--p)); color:rgba(235,235,245,.6)}
+.p-input{
+  display:flex; align-items:center; height:calc(48 * var(--p)); margin-bottom:calc(8 * var(--p));
+  padding:0 calc(14 * var(--p)); border-radius:calc(12 * var(--p)); background:var(--control);
+  box-shadow:inset 0 0 0 1px var(--hairline);
+}
+.p-input.is-secret{letter-spacing:.14em; font-size:calc(13 * var(--p))}
+.p-sheet .p-btn{position:static; margin-top:calc(16 * var(--p))}
+.phone.is-running .p-sheet .p-btn{opacity:1; transform:none}
+
+.p-popup{
+  position:absolute; left:calc(24 * var(--p)); right:calc(24 * var(--p)); top:calc(286 * var(--p)); z-index:4;
+  padding:calc(20 * var(--p)); border-radius:calc(24 * var(--p));
+  background:var(--raised); box-shadow:inset 0 0 0 1px var(--hairline), 0 calc(16 * var(--p)) calc(40 * var(--p)) rgba(0,0,0,.4);
+  opacity:0; transform:translateY(calc(12 * var(--p))) scale(.97); pointer-events:none;
+  transition:opacity var(--mid) var(--ease), transform var(--mid) var(--ease);
+}
+.phone.has-popup .p-popup{opacity:1; transform:none}
+/* The scroll-driven copy (How it works) sets these from the scroll itself. */
+.phone.is-scrub .p-sheet,.phone.is-scrub .p-scrim,.phone.is-scrub .p-popup{transition:none}
+.phone.is-pressed .p-surface .p-btn,.phone.is-continue .p-sheet .p-btn{transform:scale(.97); opacity:.85}
+.p-popup-head{display:flex; align-items:center; gap:calc(8 * var(--p)); font-weight:600}
+.p-popup-head > .icon{font-size:calc(20 * var(--p)); color:var(--warning)}
+.p-popup-head b{flex:1; font-weight:600}
+.p-digits{display:flex; justify-content:center; gap:calc(8 * var(--p)); margin:calc(16 * var(--p)) 0 calc(12 * var(--p))}
+/* One key per digit, as the app and its Lock Screen widget draw the code. */
+.p-digits span{
+  width:calc(44 * var(--p)); height:calc(56 * var(--p)); display:grid; place-items:center;
+  border-radius:calc(10 * var(--p)); background:var(--control); box-shadow:inset 0 0 0 1px var(--hairline);
+  font:500 calc(32 * var(--p))/1 var(--mono);
+}
+.p-popup p{margin:0; text-align:center; font-size:calc(13 * var(--p)); color:rgba(235,235,245,.6)}
+
+/* ---------- what it installs ---------- */
+
+.apps{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:16px}
+.app{
+  grid-column:span 2; display:flex; flex-direction:column; padding:28px;
+  background:var(--card); border:1px solid var(--hairline); border-radius:var(--r-panel);
+}
+.app img,.app .app-glyph{width:56px; height:56px; border-radius:15px; box-shadow:0 0 0 1px var(--hairline)}
+.app .app-glyph{display:grid; place-items:center; background:var(--raised); color:var(--muted); font-size:26px}
+.app h3{margin-top:24px}
+.app p{margin-top:8px; font-size:15px; line-height:1.47; color:var(--text-2)}
+.app.is-wide{grid-column:span 3; padding:40px}
+.app.is-wide img{width:80px; height:80px; border-radius:21px}
+.app.is-wide h3{margin-top:32px; font-size:28px; letter-spacing:-.02em}
+.app.is-wide p{font-size:17px; max-width:26em}
+@media (max-width:899px){
+  .app.is-wide{grid-column:span 6}
+  .app{grid-column:span 6; padding:24px}
+  .app.is-wide{padding:28px}
+}
+@media (min-width:600px) and (max-width:899px){
+  .app:not(.is-wide){grid-column:span 2}
+  .app:not(.is-wide) h3{font-size:19px}
+}
+
+/* ---------- how it works ----------
+   The steps and a copy of the hero's phone share one stage. With the script,
+   and without reduced motion, the track under the stage is several screens
+   tall: the stage stays pinned under the navigation while the page scrolls
+   through it, and the scroll plays the run (assets/site.js). Otherwise it is
+   an ordinary block and picking a step shows it. */
+
+:root{--stage-h:calc(100vh - var(--nav-h)); --how-run:320vh}
+@supports (height:100svh){:root{--stage-h:calc(100svh - var(--nav-h))}}
+
+.how .section-head{margin-bottom:48px}
+.how-stage{
+  display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center;
+  column-gap:clamp(40px,8vw,120px);
+}
+.how-track.is-scroll{height:calc(100vh - var(--nav-h) + var(--how-run))}
+.how-track.is-scroll .how-stage{position:sticky; top:var(--nav-h); height:var(--stage-h)}
+.how-phone{display:flex; justify-content:center}
+/* As tall as the stage allows, so the whole phone stays in view while pinned. */
+.how-phone .phone{--phone-w:min(clamp(280px,27vw,330px), calc((var(--stage-h) - 48px) / 2.12))}
+.steps{max-width:30rem}
+
+/* The run's timeline, as the app draws it: a ring per step, joined by a
+   hairline. The line under the step in flight fills with the scroll. */
+.step{position:relative}
+.step-btn{
+  display:flex; gap:16px; width:100%; padding:0 0 28px; border:0; background:none;
+  text-align:left; cursor:pointer;
+}
+.step:last-child .step-btn{padding-bottom:0}
+.step-rail{position:relative; flex:none; width:28px; align-self:stretch}
+.step-rail::before,.step-rail::after{
+  content:""; position:absolute; left:13.5px; top:32px; bottom:-24px; width:1px; background:var(--hairline);
+}
+.step-rail::after{background:var(--accent); transform-origin:50% 0; transform:scaleY(var(--fill,0))}
+.step:last-child .step-rail::before,.step:last-child .step-rail::after{display:none}
+.node{
+  position:relative; display:grid; place-items:center; width:28px; height:28px; border-radius:50%;
+  box-shadow:inset 0 0 0 1px var(--hairline-strong); color:var(--text-2);
+  font:500 13px/1 var(--mono);
+  transition:box-shadow var(--mid) var(--ease), background-color var(--mid) var(--ease), color var(--mid) var(--ease);
+}
+.node .icon{position:absolute; font-size:14px; stroke-width:2.2; opacity:0; transition:opacity var(--mid) var(--ease)}
+.node span{transition:opacity var(--mid) var(--ease)}
+.step-text{display:block; padding-top:2px; transition:opacity var(--mid) var(--ease)}
+.js .step-text{opacity:.5}
+.step-text b{display:block; font-size:21px; line-height:1.2; font-weight:600; letter-spacing:-.01em; color:var(--text)}
+.step-text span{display:block; margin-top:8px; font-size:16px; line-height:1.5; color:var(--text-2); font-weight:400}
+.js .step-btn:hover .step-text{opacity:.8}
+.js .step.is-active .step-text,.js .step.is-active .step-btn:hover .step-text{opacity:1}
+.step.is-active .node{box-shadow:inset 0 0 0 1.5px var(--accent); color:var(--text)}
+.step.is-past .node{background:var(--control); box-shadow:inset 0 0 0 1px var(--hairline)}
+.step.is-past .node span{opacity:0}
+.step.is-past .node .icon{opacity:1}
+
+/* On a phone only the step in flight shows, over the phone, under a bar
+   that fills a segment for each, the way the app's setup does. */
+.step-bar{display:none}
+@media (max-width:859px){
+  .how .section-head{margin-bottom:32px}
+  .how-stage{display:flex; flex-direction:column; justify-content:center}
+  .how-phone{margin-top:24px}
+  .how-phone .phone{--phone-w:min(264px, 68vw, calc((var(--stage-h) - 248px) / 2.12))}
+  .js .step-bar{display:flex; gap:4px; margin:0 0 12px}
+  .step-bar button{flex:1; height:28px; padding:12px 0; border:0; background:none; cursor:pointer}
+  .step-bar button::before{
+    content:""; display:block; height:4px; border-radius:2px;
+    background:linear-gradient(var(--accent),var(--accent)) 0 0/calc(var(--fill,0) * 100%) 100% no-repeat, var(--control-hover);
+  }
+  .steps{max-width:none; margin-top:32px}
+  .js .steps{min-height:160px; margin-top:0}
+  .js .step:not(.is-active){display:none}
+  .js .step-btn{padding:0; cursor:default}
+  .js .step-rail{display:none}
+  .js .step-text{padding:0}
+  .js .step.is-active .step-text{animation:rise var(--mid) var(--ease) both}
+}
+
+/* ---------- privacy ---------- */
+
+.lit{
+  max-width:25em; font-size:clamp(22px,2.7vw,32px); line-height:1.25; font-weight:500; letter-spacing:-.015em;
+  text-wrap:pretty;
+}
+/* Each sentence comes up to full strength as it crosses the middle of the
+   screen. Where scroll timelines aren't supported, it is simply set. */
+@keyframes lit{from{color:var(--muted)}}
+@supports (animation-timeline:view()){
+  .lit span{animation:lit linear both; animation-timeline:view(); animation-range:cover 22% cover 46%}
+}
+.source{
+  display:grid; grid-template-columns:auto minmax(0,1fr); gap:16px; max-width:44rem; margin-top:clamp(40px,5vw,64px);
+  padding:24px; border:1px solid var(--hairline); border-radius:var(--r-card); background:var(--card);
+}
+.source > .icon{margin-top:2px; font-size:20px; color:var(--warning)}
+.source p{font-size:16px; line-height:1.5; color:var(--text-2)}
+.source b{color:var(--text); font-weight:500}
+.source .link{margin-top:12px; font-size:16px}
+
+/* ---------- tools ---------- */
+
+.tools{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px}
+.tool{
+  display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; gap:4px 16px; padding:20px;
+  background:var(--card); border:1px solid var(--hairline); border-radius:var(--r-card);
+}
+.tool img{
+  grid-row:span 2; width:56px; height:56px; border-radius:14px;
+  filter:grayscale(1); box-shadow:0 0 0 1px var(--hairline);
+}
+.tool h3{align-self:end; font-size:17px; line-height:1.3; font-weight:500}
+.tool p{align-self:start; font-size:14px; line-height:1.43; color:var(--text-2)}
+@media (max-width:899px){.tools{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:599px){.tools{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- compatibility ---------- */
+
+.specs{border-top:1px solid var(--hairline)}
+.spec{
+  display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:8px 32px; padding:24px 0;
+  border-bottom:1px solid var(--hairline);
+}
+.spec dt{display:flex; align-items:baseline; gap:12px; font-size:21px; line-height:1.3; font-weight:600; letter-spacing:-.01em}
+.spec dt .dot{position:relative; top:-3px}
+.spec dd{margin:0; color:var(--text-2)}
+.spec dd b{color:var(--text); font-weight:500}
+@media (max-width:719px){.spec{grid-template-columns:minmax(0,1fr); padding:20px 0}}
+.needs{display:flex; flex-wrap:wrap; gap:8px 32px; margin-top:32px; font-size:15px; color:var(--text-2)}
+.needs li{display:flex; align-items:center; gap:8px}
+.needs .icon{font-size:18px; color:var(--muted)}
+
+/* ---------- closing panel ---------- */
+
+.cta{
+  position:relative; overflow:hidden; text-align:center;
+  padding:clamp(56px,8vw,96px) var(--gutter);
+  background:var(--card); border:1px solid var(--hairline); border-radius:32px;
+}
+.cta img{width:72px; height:72px; margin:0 auto 24px; border-radius:17px; box-shadow:0 0 0 1px var(--hairline)}
+.cta .lead{max-width:30rem; margin:16px auto 0}
+.cta .hero-actions{margin-top:32px}
+
+/* ---------- footer ---------- */
+
+.footer{margin-top:clamp(80px,11vw,144px); padding:48px 0 max(48px,env(safe-area-inset-bottom)); border-top:1px solid var(--hairline); font-size:14px; line-height:1.43}
+.footer-cols{display:grid; grid-template-columns:minmax(0,2fr) repeat(3,minmax(0,1fr)); gap:32px}
+.footer h2{margin-bottom:12px; font-size:14px; font-weight:500; color:var(--text)}
+.footer li + li{margin-top:8px}
+.footer a{color:var(--text-2); text-decoration:none; transition:color var(--fast) var(--ease)}
+.footer a:hover{color:var(--text)}
+.footer .brand{margin-bottom:12px; color:var(--text)}
+.footer-about{max-width:22rem; color:var(--muted)}
+.footer-legal{margin-top:40px; padding-top:20px; border-top:1px solid var(--hairline); display:flex; flex-wrap:wrap; gap:8px 24px; justify-content:space-between; color:var(--muted)}
+@media (max-width:719px){
+  .footer-cols{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .footer-cols > :first-child{grid-column:1 / -1}
+}
+
+/* ---------- the video ---------- */
+
+.film{
+  width:min(960px,calc(100vw - 32px)); max-width:none; padding:0; border:0; overflow:visible;
+  background:none; color:inherit;
+}
+.film::backdrop{background:rgba(5,5,6,.8); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px)}
+@keyframes film-in{from{opacity:0; transform:translateY(12px) scale(.98)}}
+.film[open]{animation:film-in var(--mid) var(--ease) both}
+.film-frame{position:relative; aspect-ratio:16/9; overflow:hidden; border-radius:var(--r-card); background:#000; box-shadow:0 0 0 1px var(--hairline)}
+.film-frame iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+.film-close{
+  display:grid; place-items:center; width:36px; height:36px; margin:0 0 12px auto; padding:0; border:0; border-radius:50%;
+  background:var(--raised); color:var(--text-2); font-size:16px; cursor:pointer;
+  transition:color var(--fast) var(--ease), background-color var(--fast) var(--ease);
+}
+.film-close:hover{color:var(--text); background:#26282d}
+
+/* ---------- page heads (Install, Help) ---------- */
+
+.wrap-narrow{--max:760px}
+.page-head{padding-top:clamp(48px,7vw,88px)}
+.page-head .display{font-size:clamp(40px,5.6vw,64px)}
+.page-head .lead{margin-top:16px; max-width:36rem}
+.page-head .page-actions{display:flex; flex-wrap:wrap; gap:12px; margin-top:24px}
+.page-head .page-actions + .meta{margin-top:16px}
+.page-head .meta{margin-top:20px}
+.block{margin-top:clamp(56px,8vw,96px)}
+.block > .headline{font-size:clamp(28px,3.4vw,40px); margin-bottom:24px}
+.block > .headline + .lead{margin:-8px 0 32px; max-width:36rem; font-size:19px}
+
+.panel{padding:24px; background:var(--card); border:1px solid var(--hairline); border-radius:var(--r-card)}
+
+/* ---------- install: this device, the terms, the three steps ---------- */
+
+.handoff{display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; gap:24px; margin-top:40px}
+.handoff .qr{width:112px; height:112px; padding:0; border-radius:12px; overflow:hidden}
+.handoff .qr svg,.handoff .qr img{display:block; width:100%; height:100%}
+.handoff p{margin-top:4px; color:var(--text-2); font-size:16px}
+.handoff .meta{margin-top:12px; font-size:14px; color:var(--text)}
+@media (max-width:519px){.handoff{grid-template-columns:minmax(0,1fr)}}
+
+.gate{
+  display:flex; align-items:center; gap:16px; margin-top:40px; padding:20px 24px; cursor:pointer;
+  background:var(--card); border:1px solid var(--hairline); border-radius:var(--r-card);
+  -webkit-user-select:none; user-select:none;
+  transition:border-color var(--mid) var(--ease);
+}
+.gate input{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none}
+.gate .box{
+  flex:none; display:grid; place-items:center; width:24px; height:24px; border-radius:8px;
+  background:var(--control); box-shadow:inset 0 0 0 1px var(--hairline-strong); color:#fff; font-size:15px;
+  transition:background-color var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
+}
+.gate .box .icon{stroke-width:2.6; opacity:0; transform:scale(.6); transition:opacity var(--fast) var(--ease), transform var(--fast) var(--ease)}
+.gate input:checked ~ .box{background:var(--accent); box-shadow:none}
+.gate input:checked ~ .box .icon{opacity:1; transform:none}
+.gate input:focus-visible ~ .box{outline:2px solid var(--accent); outline-offset:3px}
+.gate a{color:var(--accent); text-decoration:none}
+.gate a:hover{text-decoration:underline; text-underline-offset:3px}
+
+.flow{margin-top:48px; transition:opacity var(--mid) var(--ease)}
+.flow.is-locked{opacity:.5; pointer-events:none}
+.flow-step{display:grid; grid-template-columns:28px minmax(0,1fr); column-gap:20px; padding-bottom:56px}
+/* of-type, not last-child: Legacy follows the steps inside the flow. */
+.flow-step:last-of-type{padding-bottom:0}
+.flow-rail{position:relative}
+.flow-rail::after{content:""; position:absolute; left:13.5px; top:40px; bottom:-48px; width:1px; background:var(--hairline)}
+.flow-step:last-of-type .flow-rail::after{display:none}
+.flow-rail .node{margin-top:4px}
+.flow-step h2{font-size:clamp(24px,3vw,32px); line-height:1.15; font-weight:600; letter-spacing:-.02em}
+.flow-step h2 + p{margin-top:8px; max-width:38rem; color:var(--text-2)}
+.flow-body{margin-top:24px}
+.flow-body > * + *{margin-top:16px}
+.howto{counter-reset:howto; max-width:40rem}
+.howto li{position:relative; padding:12px 0 12px 36px; border-top:1px solid var(--hairline); font-size:16px; line-height:1.5; color:var(--text-2)}
+.howto li:first-child{border-top:0}
+.howto li::before{
+  counter-increment:howto; content:counter(howto); position:absolute; left:0; top:14px;
+  width:20px; font:400 13px/1.5 var(--mono); color:var(--muted); text-align:center;
+}
+.howto b{color:var(--text); font-weight:500}
+.aside{max-width:40rem; padding:16px 20px; border-radius:var(--r-control); background:var(--control); font-size:15px; line-height:1.5; color:var(--text-2)}
+.aside b{color:var(--text); font-weight:500}
+/* Step 1's App Store links, and the commands to paste into rootshell and
+   Minis (drawn like Help's wallet addresses, further down). */
+.app-links{display:flex; flex-wrap:wrap; gap:12px}
+.cmd + .cmd{margin-top:8px}
+
+/* Legacy: the enterprise certificates, folded under the steps. Closed it's
+   one line, like a question on Help; open, the DNS profile and the list. */
+.legacy{max-width:40rem; margin-top:56px; border-top:1px solid var(--hairline); border-bottom:1px solid var(--hairline)}
+.legacy > summary{
+  display:flex; align-items:baseline; gap:12px; padding:20px 0; cursor:pointer;
+  list-style:none; font-size:19px; line-height:1.3; font-weight:500;
+}
+.legacy > summary::-webkit-details-marker{display:none}
+.legacy > summary small{font-size:15px; font-weight:400; color:var(--muted)}
+.legacy > summary .icon{align-self:center; margin-left:auto; font-size:18px; color:var(--muted); transition:transform var(--mid) var(--ease)}
+.legacy[open] > summary .icon{transform:rotate(180deg)}
+.legacy-body{padding:4px 0 32px}
+.legacy-body > * + *{margin-top:16px}
+@media (max-width:599px){
+  .flow-step{grid-template-columns:minmax(0,1fr)}
+  .flow-rail{display:flex; align-items:center; gap:12px; margin-bottom:12px}
+  .flow-rail::after{display:none}
+  .flow-rail .node{margin-top:0}
+  .flow-step{padding-bottom:48px}
+}
+
+/* Certificates: the first one Apple still honours leads; the rest are a list. */
+.cert-tools{display:flex; gap:12px; max-width:40rem}
+.field{
+  position:relative; flex:1 1 auto; min-width:0;
+}
+.field .icon{position:absolute; left:14px; top:50%; margin-top:-9px; font-size:18px; color:var(--muted); pointer-events:none}
+.field input,.select{
+  width:100%; height:44px; border:1px solid var(--hairline); border-radius:var(--r-control);
+  background:var(--control); color:var(--text); font:400 16px/1 var(--sans); outline:none;
+  transition:border-color var(--fast) var(--ease), background-color var(--fast) var(--ease);
+}
+.field input{padding:0 14px 0 42px; -webkit-appearance:none; appearance:none}
+.field input::placeholder{color:var(--muted)}
+.field input:focus,.select:focus{border-color:var(--accent)}
+.select{
+  flex:none; width:auto; padding:0 36px 0 14px; cursor:pointer; -webkit-appearance:none; appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2380858d' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='m5.5 9 6.5 6.5L18.5 9'/></svg>");
+  background-repeat:no-repeat; background-position:right 14px center;
+}
+.certs{max-width:40rem; border:1px solid var(--hairline); border-radius:var(--r-card); background:var(--card); overflow:hidden}
+.cert{display:flex; align-items:center; gap:16px; padding:16px 16px 16px 20px; border-top:1px solid var(--hairline)}
+.cert:first-child{border-top:0}
+.cert-main{flex:1; min-width:0}
+.cert-name{font-size:16px; line-height:1.3; font-weight:500; overflow-wrap:anywhere}
+.cert-meta{margin-top:4px; font-size:13px; line-height:1.4; color:var(--muted); font-variant-numeric:tabular-nums}
+.cert-meta > span{white-space:nowrap}
+.cert-meta .status{color:var(--text-2)}
+.cert-meta .status .dot{margin-right:6px; position:relative; top:-1px}
+.cert-meta .sep{margin:0 6px}
+.days.warn{color:var(--warning)}
+.days.crit,.days.bad{color:var(--negative)}
+.cert .btn{flex:none}
+/* An expired certificate can't install anything. */
+.cert[data-days^="-"]{opacity:.5}
+.cert.is-lead{padding:20px 20px 20px 24px; background:var(--raised)}
+.cert.is-lead .cert-name{font-size:19px; font-weight:600; letter-spacing:-.01em}
+.cert.is-lead .btn{height:44px; padding:0 24px; border-radius:22px; font-size:15px; background:var(--off-white); border-color:transparent; color:var(--page)}
+.cert.is-lead .btn:hover{background:#fff}
+.certs-empty{max-width:40rem; padding:32px 0; color:var(--text-2)}
+@media (max-width:519px){
+  .cert-tools{flex-direction:column}
+  .select{width:100%}
+}
+
+/* ---------- help: tutorials, questions, community, donations ---------- */
+
+.seg{display:inline-flex; padding:2px; border-radius:10px; background:var(--control); box-shadow:inset 0 0 0 1px var(--hairline)}
+.seg button{
+  height:32px; padding:0 16px; border:0; border-radius:8px; background:none; color:var(--text-2);
+  font:500 14px/1 var(--sans); cursor:pointer;
+  transition:background-color var(--fast) var(--ease), color var(--fast) var(--ease);
+}
+.seg button:hover{color:var(--text)}
+.seg button[aria-pressed="true"],.seg button[aria-selected="true"]{background:#34373d; color:var(--text)}
+.seg-row{display:flex; flex-wrap:wrap; gap:12px}
+.videos{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px 16px; margin-top:24px}
+.videos figcaption{display:flex; justify-content:space-between; gap:12px; margin-top:12px; font-size:14px; color:var(--text-2)}
+@media (max-width:719px){.videos{grid-template-columns:minmax(0,1fr)}}
+
+.faq{max-width:44rem; border-top:1px solid var(--hairline)}
+.faq details{border-bottom:1px solid var(--hairline)}
+.faq summary{
+  display:flex; align-items:center; justify-content:space-between; gap:16px; padding:20px 0; cursor:pointer;
+  list-style:none; font-size:19px; line-height:1.3; font-weight:500;
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .icon{font-size:18px; color:var(--muted); transition:transform var(--mid) var(--ease)}
+.faq details[open] summary .icon{transform:rotate(180deg)}
+.faq details > div{padding:0 0 24px; max-width:40rem; color:var(--text-2); font-size:16px; line-height:1.5}
+.faq details > div > * + *{margin-top:12px}
+.faq b{color:var(--text); font-weight:500}
+
+.pair{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px}
+.pair .panel{display:flex; flex-direction:column; align-items:flex-start; padding:28px}
+.pair .panel p{margin:8px 0 24px; flex:1; font-size:16px; line-height:1.5; color:var(--text-2)}
+@media (max-width:719px){.pair{grid-template-columns:minmax(0,1fr)}}
+
+.coins{max-width:28rem; margin-top:40px}
+.coins .title{margin-bottom:16px}
+.coin{margin-top:20px}
+.coin-qr{width:176px; border-radius:12px; overflow:hidden; line-height:0}
+.coin-qr svg{display:block; width:100%; height:auto}
+.coin-net{margin-top:12px}
+.coin-addr,.cmd{
+  display:flex; align-items:center; gap:12px; margin-top:12px; padding:8px 8px 8px 16px;
+  border:1px solid var(--hairline); border-radius:var(--r-control); background:var(--control);
+}
+/* Breaks anywhere but never hyphenates: a hyphen copied by hand would break
+   the address or the command. */
+.coin-addr code,.cmd code{
+  flex:1; min-width:0; font:400 13px/1.5 var(--mono); color:var(--text);
+  overflow-wrap:anywhere; -webkit-hyphens:none; hyphens:none; -webkit-user-select:all; user-select:all;
+}
+
+/* ---------- a single card on an empty page (closed beta) ---------- */
+
+.solo{min-height:calc(100vh - var(--nav-h)); min-height:calc(100svh - var(--nav-h)); display:grid; place-items:center; padding:48px var(--gutter)}
+.solo-in{width:min(30rem,100%); text-align:center}
+.solo-in img{width:88px; height:88px; margin:0 auto 28px; border-radius:21px; box-shadow:0 0 0 1px var(--hairline)}
+.solo-in h1{font-size:clamp(32px,6vw,44px); line-height:1.08; font-weight:600; letter-spacing:-.025em}
+.solo-in .lead{margin-top:16px; font-size:19px}
+.solo-in .hero-actions{margin-top:32px}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important; animation-delay:0s !important; transition-duration:.01ms !important; transition-delay:0s !important}
+  .js [data-reveal]{opacity:1; transform:none}
+  .lit span{animation:none}
+}
+@media (prefers-reduced-motion:no-preference){
+  html{scroll-behavior:smooth}
+}

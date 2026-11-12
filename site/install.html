@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{PAGE_TITLE}}</title>
+<meta name="description" content="Install SideInstaller on your iPhone in three steps, with free App Store apps and no computer.">
+{{HEAD}}
+</head>
+<body>
+{{NAV}}
+
+<main class="wrap wrap-narrow">
+
+  <header class="page-head">
+    <h1 class="display rise">{{HEADLINE}}</h1>
+    <p class="lead rise" style="--i:1">{{APP_TAGLINE}}</p>
+    <div class="page-actions rise" style="--i:2">
+      <a class="btn btn-secondary" href="{{LATEST_RELEASE_URL}}" download rel="noopener">
+        <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#download"/></svg>Download .ipa
+      </a>
+    </div>
+    <p class="meta rise" style="--i:3">Version {{PAGE_VERSION}} · Updated {{LAST_UPDATED}}</p>
+  </header>
+
+  <!-- Shown by assets/site.js on anything that isn't an iPhone or iPad. -->
+  <div class="panel handoff" id="handoff" hidden>
+    {{HANDOFF_QR}}
+    <div>
+      <h2 class="title">This page installs onto the device it's opened on</h2>
+      <p>Open it in Safari on the iPhone or iPad you want to set up.</p>
+      <p class="meta">{{PAGE_URL}}</p>
+    </div>
+  </div>
+
+  <label class="gate rise" style="--i:4">
+    <input type="checkbox" id="tosCheck">
+    <span class="box" aria-hidden="true"><svg class="icon"><use href="assets/icons.svg#check"/></svg></span>
+    <span>I have read and accept the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a></span>
+  </label>
+
+  <div class="flow" id="flow">
+
+    <section class="flow-step" id="apps">
+      <div class="flow-rail"><span class="node"><span>1</span></span></div>
+      <div>
+        <h2>Get the apps</h2>
+        <p>Free on the App Store. Needs iOS 27 or later, Wi-Fi and Developer Mode on.</p>
+        <div class="flow-body">
+          <div class="app-links">
+            <a class="btn btn-secondary" href="https://apps.apple.com/app/rootshell-local-terminal-ssh/id6755794662" target="_blank" rel="noopener">rootshell<svg class="icon" aria-hidden="true"><use href="assets/icons.svg#external"/></svg></a>
+            <a class="btn btn-secondary" href="https://apps.apple.com/app/id6759188481" target="_blank" rel="noopener">Open Minis<svg class="icon" aria-hidden="true"><use href="assets/icons.svg#external"/></svg></a>
+            <a class="btn btn-secondary" href="https://apps.apple.com/app/id6755608044" target="_blank" rel="noopener">LocalDevVPN<svg class="icon" aria-hidden="true"><use href="assets/icons.svg#external"/></svg></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="flow-step" id="pair">
+      <div class="flow-rail"><span class="node"><span>2</span></span></div>
+      <div>
+        <h2>Pair</h2>
+        <p>In rootshell.</p>
+        <div class="flow-body">
+          <ol class="howto">
+            <li>Turn on <b>Location Diary Mode › Session Only</b> in rootshell's settings.</li>
+            <li>Run these one at a time:
+              <div class="cmd"><code>curl -fsSLO https://raw.githubusercontent.com/FrizzleM/siboot/main/rootshell/bin/siboot-pair.wasm</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
+              <div class="cmd"><code>ifconfig en0 &gt; ifconfig.txt</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
+              <div class="cmd"><code>./siboot-pair.wasm</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
+            </li>
+            <li>In <b>Settings › Privacy &amp; Security › Developer Mode</b>, tap <b>Pair with siboot</b> at the bottom and enter the code rootshell shows. Leave rootshell running.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="flow-step" id="install">
+      <div class="flow-rail"><span class="node"><span>3</span></span></div>
+      <div>
+        <h2>Install</h2>
+        <p>In Open Minis.</p>
+        <div class="flow-body">
+          <ol class="howto">
+            <li>Connect LocalDevVPN, then run:
+              <div class="cmd"><code>wget -qO- https://raw.githubusercontent.com/FrizzleM/siboot/main/minis/install.sh | sh</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
+            </li>
+            <li>Type the transfer code rootshell shows, then sign in with your Apple Account. Keep Minis open until it's done.</li>
+            <li>Trust your Apple Account in <b>Settings › General › VPN &amp; Device Management</b>, then open SideInstaller.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- The enterprise certificates, folded away. #setup and #installation are
+         where they were steps 1 and 2; assets/site.js opens this for a link to
+         either, or to #legacy. -->
+    <details class="legacy" id="legacy"{{LEGACY_OPEN}}>
+      <summary>Legacy <small>Enterprise certificates</small><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#chevron-down"/></svg></summary>
+      <div class="legacy-body">
+        <a class="btn btn-secondary" id="setup" href="SideInstallerDNS.mobileconfig">
+          <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#download"/></svg>Install DNS profile
+        </a>
+        <ol class="howto">
+          <li>Install the profile in Settings, then select <b>SideInstaller</b> in <b>Settings › General › VPN &amp; Device Management › DNS</b>.</li>
+          <li>Tap <b>Install</b> on a certificate and trust it in <b>Settings › General › VPN &amp; Device Management</b>. If it won't open, try another.</li>
+          <li>Once SideStore is installed, remove the DNS profile.</li>
+        </ol>
+        <div class="cert-tools" id="installation">
+          <div class="field">
+            <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#search"/></svg>
+            <input id="q" type="search" placeholder="Search" aria-label="Search certificates" autocomplete="off" spellcheck="false">
+          </div>
+          <select id="sort" class="select" aria-label="Sort certificates">
+            <option value="days">Most days left</option>
+            <option value="days-asc">Soonest to expire</option>
+            <option value="name">Name</option>
+          </select>
+        </div>
+        <ul id="certs" class="certs">
+  {{CARDS}}
+        </ul>
+        <p id="empty" class="certs-empty" hidden>No certificate matches that search</p>
+        <p class="meta">{{REPO_NOTE}}</p>
+      </div>
+    </details>
+
+  </div>
+
+  <div class="block pair">
+    <div class="panel">
+      <h2 class="title">Rather sign it yourself?</h2>
+      <p>The unsigned IPA is published with every release, for your own signing tool.</p>
+      <a class="btn btn-secondary" href="{{LATEST_RELEASE_URL}}" download rel="noopener">
+        <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#download"/></svg>Download the IPA
+      </a>
+    </div>
+    <div class="panel">
+      <h2 class="title">Want to watch it done?</h2>
+      <p>Video tutorials in English and Spanish, and answers to the common questions.</p>
+      <a class="btn btn-secondary" href="help.html">Open Help</a>
+    </div>
+  </div>
+
+</main>
+
+{{FOOTER}}
+</body>
+</html>

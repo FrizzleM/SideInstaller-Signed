@@ -1,9 +1,10 @@
 name: deploy-pages
 
-# Builds the install site (sideinstaller.net) from this repository's releases
-# and deploys it to GitHub Pages: index.html from the latest stable release,
-# beta.html from the newest prerelease, each with its OTA manifests, plus the
-# static pages and icons from FrizzleM/SideInstaller. See signer/site.py.
+# Builds the site (sideinstaller.net) from this repository's releases and
+# deploys it to GitHub Pages: install.html from the latest stable release,
+# beta.html from the newest prerelease, each with its OTA manifests, the
+# overview and help pages from site/, plus the static pages and icons from
+# FrizzleM/SideInstaller. See signer/site.py.
 # Nothing is signed and nothing is committed.
 #
 # sign runs this whenever it changes a release. Run it by hand (Actions ›

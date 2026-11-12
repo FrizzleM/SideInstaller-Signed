@@ -2,87 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SideInstaller — Beta</title>
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
-<link rel="apple-touch-icon" href="app-icon.png">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#011a5c">
-<style>
-  /* Same palette as index.html so the closed beta page still reads as SideInstaller. */
-  :root{
-    --page:#011a5c;
-    --card:rgba(15,22,40,.62);
-    --stroke:rgba(255,255,255,.10); --stroke-strong:rgba(255,255,255,.18);
-    --text:#f4f6fb; --muted:#c6cee0; --faint:#a5aec4;
-    --accent:#2170f5; --accent2:#4dadff;
-    --brand:linear-gradient(135deg,var(--accent),var(--accent2));
-    --radius:22px; --radius-btn:18px;
-  }
-  *{box-sizing:border-box}
-  html{-webkit-text-size-adjust:100%; background:var(--page)}
-  body{
-    margin:0; min-height:100vh; min-height:100dvh; color:var(--text);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
-    line-height:1.55; background:var(--page);
-    display:grid; place-items:center;
-    padding:max(20px,env(safe-area-inset-top)) 18px max(20px,env(safe-area-inset-bottom));
-  }
-
-  .card{
-    width:min(480px,100%); padding:34px 26px 28px; text-align:center;
-    background:var(--card); border:1px solid var(--stroke); border-radius:var(--radius);
-    -webkit-backdrop-filter:blur(20px) saturate(140%); backdrop-filter:blur(20px) saturate(140%);
-    animation:rise .5s cubic-bezier(.22,.9,.35,1) both;
-  }
-  @keyframes rise{from{opacity:0; transform:translateY(16px) scale(.98)}}
-  @media (prefers-reduced-motion:reduce){ .card{animation:none} }
-
-  .logo{
-    width:88px; height:88px; margin:0 auto 20px; overflow:hidden;
-    border-radius:21px; background:linear-gradient(150deg,#0d1530,#05070f);
-    border:1px solid var(--stroke-strong);
-    box-shadow:0 12px 40px rgba(33,112,245,.32), 0 18px 60px rgba(1,26,92,.85);
-  }
-  .logo img{width:100%; height:100%; object-fit:cover}
-  .tag{
-    display:inline-block; margin-bottom:12px; padding:5px 12px;
-    font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
-    color:var(--faint); background:rgba(255,255,255,.05); border:1px solid var(--stroke); border-radius:999px;
-  }
-  h1{margin:0; color:#fff; font-size:clamp(26px,6vw,34px); font-weight:800; letter-spacing:-.02em}
-  p{margin:10px auto 0; max-width:380px; color:var(--muted); font-size:15px}
-
-  .actions{display:flex; flex-direction:column; gap:10px; margin-top:24px}
-  .btn{
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    padding:13px 16px; font-size:15px; font-weight:700; text-decoration:none;
-    border-radius:var(--radius-btn); transition:transform .14s, filter .14s;
-  }
-  .btn svg{width:17px; height:17px; flex:none}
-  .btn:hover{filter:brightness(1.08)}
-  .btn:active{transform:scale(.97)}
-  .btn.primary{color:#fff; background:var(--brand); box-shadow:0 8px 24px rgba(33,112,245,.4)}
-  .btn.discord{color:#fff; background:#5865f2}
-</style>
+<title>SideInstaller beta</title>
+<meta name="robots" content="noindex">
+{{HEAD}}
 </head>
 <body>
-  <main class="card">
-    <div class="logo"><img src="https://raw.githubusercontent.com/FrizzleM/SideInstaller/main/app-icon.png" alt="SideInstaller"></div>
-    <span class="tag">Beta closed</span>
-    <h1>The beta is over</h1>
-    <p>Thanks to everyone who tested and sent feedback. Beta builds are no longer available. Get the latest release from the main page.</p>
-    <div class="actions">
-      <a class="btn primary" href="https://sideinstaller.net/">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
-        Go to SideInstaller
-      </a>
-      <a class="btn discord" href="https://discord.gg/sQ5Y8vbYJS" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.211.375-.446.865-.61 1.249a18.27 18.27 0 0 0-5.487 0 12.6 12.6 0 0 0-.617-1.25.077.077 0 0 0-.079-.036A19.74 19.74 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.1 14.1 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.1 13.1 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.009c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.3 12.3 0 0 1-1.873.893.077.077 0 0 0-.041.106c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.331c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-        Join the Discord
-      </a>
+{{NAV}}
+
+<main class="solo">
+  <div class="solo-in">
+    <img class="app-icon rise" src="app-icon.png" width="88" height="88" alt="">
+    <h1 class="rise" style="--i:1">The beta is over</h1>
+    <p class="lead rise" style="--i:2">Thanks to everyone who tested and sent feedback. Beta builds are no longer available. The latest release is on the install page.</p>
+    <div class="hero-actions rise" style="--i:3">
+      <a class="btn btn-lg btn-primary" href="install.html">Install SideInstaller</a>
+      <a class="link" href="https://discord.gg/sQ5Y8vbYJS" target="_blank" rel="noopener">Join the Discord<svg class="icon" aria-hidden="true"><use href="assets/icons.svg#chevron-right"/></svg></a>
     </div>
-  </main>
+  </div>
+</main>
+
 </body>
 </html>

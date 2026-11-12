@@ -1,16 +1,25 @@
-"""The install site (sideinstaller.net), rebuilt from the releases.
+"""The site (sideinstaller.net), rebuilt from the releases.
 
-  index.html   the latest stable release, one card per signed certificate
-  beta.html    the newest prerelease, or site/beta-closed.html without one
-  stable/      index.html's OTA manifests, each pointing at an IPA on the release
-  beta/        beta.html's
+  index.html    the overview: what SideInstaller is and how it works
+  install.html  the latest stable release, one row per signed certificate
+  beta.html     the newest prerelease, or site/beta-closed.html without one
+  help.html     tutorials, questions, the community and donations
+  assets/       the stylesheet, the script, the icons and the images
+  stable/       install.html's OTA manifests, each pointing at an IPA on the release
+  beta/         beta.html's
   terms.html, open.html, the icons and the DNS profile, from the main repository
 
-Cards are ordered so the certificates that work come first: valid, then never
+Every page is a file in site/ with {{TOKENS}} in it. {{HEAD}}, {{NAV}} and
+{{FOOTER}} are the shared pieces in site/partials/; the rest come from the
+release's state.
+
+Rows are ordered so the certificates that work come first: valid, then never
 confirmed, then revoked or expired; longest-lived first within each group."""
 from __future__ import annotations
 
+import hashlib
 import html
+import re
 import shutil
 import time
 from datetime import datetime, timezone
@@ -23,11 +32,27 @@ from .util import Fatal, iso, log, parse_iso, pmap, utcnow, warn
 
 STATIC_FILES = ("favicon-32.png", "favicon-192.png", "app-icon.png",
                 "SideInstallerDNS.mobileconfig", "terms.html", "open.html")
-INSTALL_ICON = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" '
-                'stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/>'
-                '<path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg>')
-TAGLINE = "On-device sideloader. Follow the three steps below to get set up."
-BETA_TAGLINE = "Beta test build, not the public release. Follow the three steps below to get set up."
+# Pages that say the same thing whatever the release holds.
+PLAIN_PAGES = ("index.html", "help.html")
+PARTIALS = ("head", "nav", "footer")
+# Shared files every page links to. GitHub Pages lets browsers keep any file
+# for ten minutes, so a page deployed after them could meet the copies from
+# before and draw with the old styles and icons. Each link carries a hash of
+# the file's contents, so a changed file is a new address.
+VERSIONED = ("site.css", "site.js", "icons.svg")
+VERSIONED_LINK = re.compile(r'assets/(' + "|".join(re.escape(n) for n in VERSIONED) + r')(?=["#])')
+HEADLINE = "Install SideInstaller"
+TAGLINE = "Three steps on the iPhone you want to set up. No computer, no certificate."
+BETA_HEADLINE = "Install the beta"
+# siboot installs the latest stable release, so a beta only comes from the
+# certificates: beta.html opens Legacy ({{LEGACY_OPEN}}) and says so.
+BETA_TAGLINE = ("A beta test build, not the public release. Install it from a certificate "
+                "under Legacy: siboot's steps install the public release.")
+# The navigation's button, left off the pages it would only point back to.
+NAV_CTA = '<a class="btn btn-sm btn-primary" href="install.html">Install</a>'
+# Points at https://sideinstaller.net/install.html, so only that page shows it.
+HANDOFF_QR = ('<div class="qr"><img src="assets/qr-install.svg" width="112" height="112" '
+              'alt="QR code for the install page"></div>')
 
 
 def _esc(value: str) -> str:
@@ -35,7 +60,7 @@ def _esc(value: str) -> str:
 
 
 def countdown(days: int | None) -> tuple[str, str]:
-    """(class, label) of the days-left text; the template's script redraws it."""
+    """(class, label) of the days-left text; the page's script redraws it."""
     if days is None:
         return "unknown", "Unknown"
     if days < 0:
@@ -52,62 +77,84 @@ def countdown(days: int | None) -> tuple[str, str]:
 
 
 def card(entry: dict, install_url: str, now: datetime) -> str:
+    """One certificate's row. Only a certificate Apple still honours is marked;
+    assets/site.js reads the data attributes to sort, search and recount."""
     expiry = st.effective_expiry(entry)
     days = st.days_left(expiry, now)
     status = entry.get("status", "unknown")
     name = _esc(entry.get("display_name") or entry["name"])
-    pill = '<span class="pill good">Valid</span>' if status == "valid" else ""
     cls, label = countdown(days)
     meta = []
+    if status == "valid":
+        meta.append('<span class="status"><i class="dot good"></i>Valid</span>')
     if expiry:
-        meta.append(f"Expires {expiry.date().isoformat()}")
+        meta.append(f"<span>Expires {expiry.date().isoformat()}</span>")
     if cls != "unknown":
         meta.append(f'<span class="days {cls}">{label}</span>')
-    meta_line = f'<p class="cert-meta">{" &middot; ".join(meta)}</p>' if meta else ""
+    sep = '<span class="sep">·</span>'
+    meta_line = f'<p class="cert-meta">{sep.join(meta)}</p>' if meta else ""
     expires_attr = f' data-expires="{iso(expiry)}"' if expiry else ""
-    return (f'    <article class="cert-card" data-name="{name}" data-days="{days if days is not None else -999999}"'
+    return (f'            <li class="cert" data-name="{name}" data-days="{days if days is not None else -999999}"'
             f'{expires_attr} data-rank="{st.rank(entry)}" data-status="{status}">\n'
-            f'      <div class="cert-head">\n'
-            f'        <h3 class="cert-name">{name}</h3>\n'
-            f'        {pill}\n'
-            f'      </div>\n'
-            f'      {meta_line}\n'
-            f'      <a class="install-btn" href="{_esc(install_url)}">{INSTALL_ICON} Install</a>\n'
-            f'    </article>\n')
+            f'              <div class="cert-main">\n'
+            f'                <h3 class="cert-name">{name}</h3>\n'
+            f'                {meta_line}\n'
+            f'              </div>\n'
+            f'              <a class="btn btn-sm btn-secondary" href="{_esc(install_url)}">Install</a>\n'
+            f'            </li>\n')
 
 
-def render(template: str, state: dict, *, manifest_base: str, page_title: str, tagline: str,
-           download_url: str, logo_url: str, prefix: str, now: datetime) -> str:
-    app = state.get("app") or {}
-    app_name = app.get("title") or "SideInstaller"
+def _count(n: int, noun: str) -> str:
+    return f"{n} {noun}" if n == 1 else f"{n} {noun}s"
+
+
+def install_tokens(state: dict, *, manifest_base: str, page_title: str, headline: str, tagline: str,
+                   download_url: str, page_url: str, qr: str, prefix: str, now: datetime) -> dict[str, str]:
+    """What an install page (install.html, beta.html) shows of its release."""
     entries = st.sort_for_display(st.signed(state), now)
     cards = "".join(card(e, f"itms-services://?action=download-manifest&url={manifest_base}/"
                             f"{prefix}-{e['name']}.plist", now) for e in entries)
     if not cards:
-        cards = '    <p class="empty show">No signed builds available yet. Check back soon.</p>\n'
+        cards = '            <li class="certs-none">No signed builds are available yet. Check back soon.</li>\n'
     valid = sum(1 for e in entries if e.get("status") == "valid")
     paris = now.astimezone(_paris())
-    tokens = {
-        "{{PAGE_TITLE}}": _esc(page_title or app_name),
-        "{{APP_NAME}}": _esc(app_name),
+    return {
+        "{{PAGE_TITLE}}": _esc(page_title),
+        "{{HEADLINE}}": _esc(headline),
         "{{APP_TAGLINE}}": _esc(tagline),
-        "{{APP_VERSION}}": _esc(app.get("version") or "—"),
-        "{{CERT_COUNT}}": str(len(entries)),
-        "{{LOGO}}": f'<img src="{_esc(logo_url)}" alt="{_esc(app_name)}">',
         "{{LAST_UPDATED}}": paris.strftime("%d %b %Y, %H:%M CET"),
         "{{LATEST_RELEASE_URL}}": _esc(download_url),
-        "{{REPO_NOTE}}": (f"Built automatically &middot; signed with {len(entries)} certificate(s), "
+        "{{REPO_NOTE}}": (f"Built automatically · signed with {_count(len(entries), 'certificate')}, "
                           f"{valid} currently valid"),
+        "{{PAGE_URL}}": _esc(page_url),
+        "{{HANDOFF_QR}}": qr,
+        "{{CARDS}}": cards.strip(),
     }
-    out = []
-    for line in template.splitlines(keepends=True):
-        if "{{CARDS}}" in line:
-            out.append(cards)
-            continue
-        for token, value in tokens.items():
-            line = line.replace(token, value)
-        out.append(line)
-    return "".join(out)
+
+
+def asset_versions(assets: Path) -> dict[str, str]:
+    return {name: hashlib.sha256((assets / name).read_bytes()).hexdigest()[:10] for name in VERSIONED}
+
+
+def compose(template: str, parts: dict[str, str], tokens: dict[str, str], *,
+            current: str = "", cta: bool = True, versions: dict[str, str] | None = None) -> str:
+    """A page from its template: the shared head, navigation and footer first,
+    then the tokens. `current` is the navigation link to mark as this page;
+    `versions` stamps the links to the shared files (asset_versions)."""
+    nav = parts["nav"].replace("{{NAV_CTA}}", NAV_CTA if cta else "")
+    if current:
+        nav = nav.replace(f'<a href="{current}"', f'<a href="{current}" aria-current="page"')
+    page = template
+    for token, value in (("{{HEAD}}", parts["head"]), ("{{NAV}}", nav), ("{{FOOTER}}", parts["footer"])):
+        page = page.replace(token, value.rstrip("\n"))
+    for token, value in tokens.items():
+        page = page.replace(token, value)
+    if versions:
+        page = VERSIONED_LINK.sub(lambda m: f"{m.group(0)}?v={versions[m.group(1)]}", page)
+    left = page.find("{{")
+    if left != -1:
+        raise Fatal(f"a page still has an unfilled token: {page[left:left + 40]!r}")
+    return page
 
 
 def _paris():
@@ -172,8 +219,11 @@ def build(*, root: Path, out: Path, static_dir: Path, site_url: str, signed_repo
           main_repo: str, prefix: str, ipa_asset: str, workdir: Path,
           from_dir: Path | None = None) -> None:
     site_url = "https://" + site_url.split("://", 1)[-1].rstrip("/")   # itms-services needs https
-    template = (root / "site" / "template.html").read_text(encoding="utf-8")
-    logo = f"https://raw.githubusercontent.com/{main_repo}/main/app-icon.png"
+    host = site_url.split("://", 1)[-1]
+    site = root / "site"
+    parts = {name: (site / "partials" / f"{name}.html").read_text(encoding="utf-8") for name in PARTIALS}
+    install_page = (site / "install.html").read_text(encoding="utf-8")
+    versions = asset_versions(site / "assets")
     now = utcnow()
     shutil.rmtree(out, ignore_errors=True)
     out.mkdir(parents=True)
@@ -189,12 +239,16 @@ def build(*, root: Path, out: Path, static_dir: Path, site_url: str, signed_repo
         gh = GitHub(discover_token())
         latest = gh.latest_release(signed_repo)
         if latest is None:
-            raise Fatal(f"{signed_repo} has no release marked Latest, so there is nothing to put on index.html")
+            raise Fatal(f"{signed_repo} has no release marked Latest, so there is nothing to put on install.html")
         pages.append(("stable",) + load_release(gh, signed_repo, latest, workdir, prefix))
         betas = [r for r in gh.releases(signed_repo) if r.get("prerelease") and not r.get("draft")]
         if betas:
             beta = max(betas, key=lambda r: r.get("created_at") or "")
             pages.append(("beta",) + load_release(gh, signed_repo, beta, workdir, prefix))
+
+    # The version every page's footer shows is the stable release's.
+    stable = next((state for channel, state, _ in pages if channel == "stable"), None)
+    shared = {"{{APP_VERSION}}": _esc(((stable or {}).get("app") or {}).get("version") or "—")}
 
     for channel, state, legacy_manifests in pages:
         folder = out / channel
@@ -209,23 +263,33 @@ def build(*, root: Path, out: Path, static_dir: Path, site_url: str, signed_repo
             (folder / plist).write_text(ipa.manifest(url, entry.get("bundle_id", ""),
                                                      app.get("version", ""), app.get("title") or "SideInstaller"))
         if channel == "stable":
-            title, tagline = app.get("title") or "SideInstaller", TAGLINE
+            page, title, headline, tagline, qr = "install.html", HEADLINE, HEADLINE, TAGLINE, HANDOFF_QR
             download = f"https://github.com/{main_repo}/releases/latest/download/{ipa_asset}"
         else:
-            title, tagline = "SideInstaller — Beta", BETA_TAGLINE
+            page, title, headline, tagline, qr = "beta.html", "SideInstaller beta", BETA_HEADLINE, BETA_TAGLINE, ""
             download = (state.get("unsigned_ipa") or {}).get("url") or \
                 f"https://github.com/{main_repo}/releases/tag/{state['tag']}"
-        page = "index.html" if channel == "stable" else "beta.html"
-        (out / page).write_text(render(template, state, manifest_base=f"{site_url}/{channel}",
-                                       page_title=title, tagline=tagline, download_url=download,
-                                       logo_url=logo, prefix=prefix, now=now), encoding="utf-8")
-        log(f"   {page}: {state['tag']}, {len(st.signed(state))} card(s)")
+        tokens = install_tokens(state, manifest_base=f"{site_url}/{channel}", page_title=title,
+                                headline=headline, tagline=tagline, download_url=download,
+                                page_url=f"{host}/{page}", qr=qr, prefix=prefix, now=now)
+        # The footer names the stable version; the page's own line names this release's.
+        tokens = {**shared, "{{PAGE_VERSION}}": _esc(app.get("version") or "—"),
+                  "{{LEGACY_OPEN}}": " open" if channel == "beta" else "", **tokens}
+        # An install page's own navigation link stands in for the Install button.
+        (out / page).write_text(compose(install_page, parts, tokens, current="install.html" if channel == "stable" else "",
+                                        cta=False, versions=versions), encoding="utf-8")
+        log(f"   {page}: {state['tag']}, {len(st.signed(state))} row(s)")
 
+    for page in PLAIN_PAGES:
+        template = (site / page).read_text(encoding="utf-8")
+        (out / page).write_text(compose(template, parts, shared, current=page, versions=versions), encoding="utf-8")
     if not any(channel == "beta" for channel, _, _ in pages):
-        closed = root / "site" / "beta-closed.html"
+        closed = site / "beta-closed.html"
         if closed.exists():
-            shutil.copyfile(closed, out / "beta.html")
+            (out / "beta.html").write_text(compose(closed.read_text(encoding="utf-8"), parts, shared,
+                                                   versions=versions), encoding="utf-8")
             log("   beta.html: no prerelease, so the closed-beta page")
+    shutil.copytree(site / "assets", out / "assets")
     for name in STATIC_FILES:
         if (static_dir / name).exists():
             shutil.copyfile(static_dir / name, out / name)
