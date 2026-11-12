@@ -63,6 +63,7 @@
         <div class="flow-body">
           <ol class="howto">
             <li>Turn on <b>Location Diary Mode › Session Only</b> in rootshell's settings.</li>
+            <li>Tap <b>Local Shell</b>, then <b>Open</b> at the top right.</li>
             <li>Run these one at a time:
               <div class="cmd"><code>curl -fsSLO https://raw.githubusercontent.com/FrizzleM/siboot/main/rootshell/bin/siboot-pair.wasm</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
               <div class="cmd"><code>ifconfig en0 &gt; ifconfig.txt</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
@@ -81,6 +82,7 @@
         <p>In Open Minis.</p>
         <div class="flow-body">
           <ol class="howto">
+            <li>Tap the console icon at the top right, then <b>Shell Terminal</b>.</li>
             <li>Connect LocalDevVPN, then run:
               <div class="cmd"><code>wget -qO- https://raw.githubusercontent.com/FrizzleM/siboot/main/minis/install.sh | sh</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
             </li>
@@ -130,7 +132,7 @@
   <dialog class="sheet" id="devmode" aria-labelledby="devmodeTitle">
     <button type="button" class="sheet-close" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#x"/></svg></button>
     <h2 class="title" id="devmodeTitle">No Developer Mode in Settings?</h2>
-    <p>Connect LocalDevVPN, then run this in Open Minis. Developer Mode then appears in <b>Settings › Privacy &amp; Security › Developer Mode</b>.</p>
+    <p>Connect LocalDevVPN. In Open Minis, tap the console icon at the top right, then <b>Shell Terminal</b>, and run this. Developer Mode then appears in <b>Settings › Privacy &amp; Security › Developer Mode</b>.</p>
     <div class="cmd"><code>wget -qO- https://raw.githubusercontent.com/FrizzleM/siboot/main/minis/install.sh | sh -s developer-mode</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
   </dialog>
 
