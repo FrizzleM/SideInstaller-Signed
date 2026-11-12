@@ -100,6 +100,30 @@
     openFilm(link.getAttribute("data-film"), link.getAttribute("data-film-title") || "Video");
   });
 
+  /* ---------- popups (Install's Developer Mode) ----------
+   A [data-dialog] link opens the <dialog> it names; so does arriving at
+   the page with that dialog's #id. A tap outside the card or on its X
+   closes it, as Escape does. */
+
+  function openSheet(sheet) {
+    if (!sheet || !window.HTMLDialogElement || sheet.open) return;
+    if (!sheet.sheetReady) {
+      sheet.sheetReady = true;
+      sheet.addEventListener("click", function (e) {
+        if (e.target === sheet || (e.target.closest && e.target.closest(".sheet-close"))) sheet.close();
+      });
+    }
+    sheet.showModal();
+  }
+  doc.addEventListener("click", function (e) {
+    var link = e.target.closest && e.target.closest("[data-dialog]");
+    if (!link || !window.HTMLDialogElement) return;
+    e.preventDefault();
+    openSheet(doc.getElementById(link.getAttribute("data-dialog")));
+  });
+  var hashSheet = location.hash.length > 1 && doc.getElementById(location.hash.slice(1));
+  if (hashSheet && hashSheet.classList.contains("sheet")) openSheet(hashSheet);
+
   /* ---------- the phone's run (Overview) ----------
    "How it works" holds the four steps and a copy of the hero's phone on one
    stage. The stage stays pinned while the page scrolls through the track

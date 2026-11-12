@@ -648,6 +648,25 @@ kbd{
 }
 .film-close:hover{color:var(--text); background:#26282d}
 
+/* ---------- popups: a card over the dimmed page (Install's Developer Mode) ---------- */
+
+.sheet{
+  width:min(34rem,calc(100vw - 32px)); max-width:none; max-height:calc(100dvh - 32px); overflow:auto;
+  padding:24px; border:1px solid var(--hairline); border-radius:var(--r-card); background:var(--card); color:var(--text);
+}
+.sheet::backdrop{background:rgba(5,5,6,.7); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px)}
+.sheet[open]{animation:film-in var(--mid) var(--ease) both}
+.sheet .title{padding-right:44px}
+.sheet p{margin-top:12px; font-size:16px; line-height:1.5; color:var(--text-2)}
+.sheet b{color:var(--text); font-weight:500}
+.sheet .cmd{margin-top:20px}
+.sheet-close{
+  position:absolute; top:16px; right:16px; display:grid; place-items:center; width:32px; height:32px; padding:0; border:0; border-radius:50%;
+  background:var(--raised); color:var(--text-2); font-size:15px; cursor:pointer;
+  transition:color var(--fast) var(--ease), background-color var(--fast) var(--ease);
+}
+.sheet-close:hover{color:var(--text); background:#26282d}
+
 /* ---------- page heads (Install, Help) ---------- */
 
 .wrap-narrow{--max:760px}

@@ -44,7 +44,7 @@
       <div class="flow-rail"><span class="node"><span>1</span></span></div>
       <div>
         <h2>Get the apps</h2>
-        <p>Free on the App Store. Needs iOS 27 or later, Wi-Fi and Developer Mode on.</p>
+        <p>Free on the App Store. Needs iOS 27 or later, Wi-Fi and <a class="link" href="#devmode" data-dialog="devmode">Developer Mode</a> on.</p>
         <div class="flow-body">
           <div class="app-links">
             <a class="btn btn-secondary" href="https://apps.apple.com/app/rootshell-local-terminal-ssh/id6755794662" target="_blank" rel="noopener">rootshell<svg class="icon" aria-hidden="true"><use href="assets/icons.svg#external"/></svg></a>
@@ -125,6 +125,14 @@
     </details>
 
   </div>
+
+  <!-- Opened by step 1's "Developer Mode" link (assets/site.js). -->
+  <dialog class="sheet" id="devmode" aria-labelledby="devmodeTitle">
+    <button type="button" class="sheet-close" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#x"/></svg></button>
+    <h2 class="title" id="devmodeTitle">No Developer Mode in Settings?</h2>
+    <p>Connect LocalDevVPN, then run this in Open Minis. Developer Mode then appears in <b>Settings › Privacy &amp; Security › Developer Mode</b>.</p>
+    <div class="cmd"><code>wget -qO- https://raw.githubusercontent.com/FrizzleM/siboot/main/minis/install.sh | sh -s developer-mode</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
+  </dialog>
 
   <div class="block pair">
     <div class="panel">
