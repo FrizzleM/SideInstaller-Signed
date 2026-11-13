@@ -70,7 +70,7 @@
               <div class="cmd"><code>./siboot-pair.wasm</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
             </li>
             <li>In <b>Settings › Privacy &amp; Security › Developer Mode</b>, tap <b>Pair with siboot</b> at the bottom and enter the code rootshell shows. Leave rootshell running.</li>
-            <li>Go back to rootshell and wait for it to give a second code. When it does, open the Open Minis app.</li>
+            <li>Go back to rootshell and wait for it to give a second code. When it does, come back to this page for step 3.</li>
           </ol>
         </div>
       </div>
@@ -83,9 +83,15 @@
         <p>In Open Minis.</p>
         <div class="flow-body">
           <ol class="howto">
-            <li>Tap the console icon at the top right, then <b>Shell Terminal</b>.</li>
-            <li>Connect LocalDevVPN, then run:
-              <div class="cmd"><code>wget -qO- https://raw.githubusercontent.com/FrizzleM/siboot/main/minis/install.sh | sh</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
+            <li>Connect LocalDevVPN, then tap <b>Open in Minis</b>. Minis's terminal opens with the command typed in: tap <b>return</b> to run it.
+              <!-- The command below, percent-encoded: Minis opens its terminal
+                   with it typed in, and leaves return to the user. -->
+              <div class="cmd-open"><a class="btn btn-secondary" href="minis://open_terminal?init_command=wget%20-qO-%20https%3A%2F%2Fraw.githubusercontent.com%2FFrizzleM%2Fsiboot%2Fmain%2Fminis%2Finstall.sh%20%7C%20sh">Open in Minis<svg class="icon" aria-hidden="true"><use href="assets/icons.svg#external"/></svg></a></div>
+              <details class="cmd-manual">
+                <summary>Or paste it manually<svg class="icon" aria-hidden="true"><use href="assets/icons.svg#chevron-down"/></svg></summary>
+                <p>In Open Minis, tap the console icon at the top right, then <b>Shell Terminal</b>, and run:</p>
+                <div class="cmd"><code>wget -qO- https://raw.githubusercontent.com/FrizzleM/siboot/main/minis/install.sh | sh</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
+              </details>
             </li>
             <li>Type the transfer code rootshell shows, then sign in with your Apple Account. Keep Minis open until it's done.</li>
             <li>Trust your Apple Account in <b>Settings › General › VPN &amp; Device Management</b>, then open SideInstaller.</li>
@@ -133,8 +139,14 @@
   <dialog class="sheet" id="devmode" aria-labelledby="devmodeTitle">
     <button type="button" class="sheet-close" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#x"/></svg></button>
     <h2 class="title" id="devmodeTitle">No Developer Mode in Settings?</h2>
-    <p>Connect LocalDevVPN. In Open Minis, tap the console icon at the top right, then <b>Shell Terminal</b>, and run this. Developer Mode then appears in <b>Settings › Privacy &amp; Security › Developer Mode</b>.</p>
-    <div class="cmd"><code>wget -qO- https://raw.githubusercontent.com/FrizzleM/siboot/main/minis/install.sh | sh -s developer-mode</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
+    <p>Connect LocalDevVPN, then tap <b>Open in Minis</b> and <b>return</b> in its terminal. Developer Mode then appears in <b>Settings › Privacy &amp; Security › Developer Mode</b>.</p>
+    <!-- The command below, percent-encoded, as in step 3. -->
+    <div class="cmd-open"><a class="btn btn-secondary" href="minis://open_terminal?init_command=wget%20-qO-%20https%3A%2F%2Fraw.githubusercontent.com%2FFrizzleM%2Fsiboot%2Fmain%2Fminis%2Finstall.sh%20%7C%20sh%20-s%20developer-mode">Open in Minis<svg class="icon" aria-hidden="true"><use href="assets/icons.svg#external"/></svg></a></div>
+    <details class="cmd-manual">
+      <summary>Or paste it manually<svg class="icon" aria-hidden="true"><use href="assets/icons.svg#chevron-down"/></svg></summary>
+      <p>In Open Minis, tap the console icon at the top right, then <b>Shell Terminal</b>, and run:</p>
+      <div class="cmd"><code>wget -qO- https://raw.githubusercontent.com/FrizzleM/siboot/main/minis/install.sh | sh -s developer-mode</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
+    </details>
   </dialog>
 
   <div class="block pair">

@@ -741,9 +741,23 @@ kbd{
 .aside{max-width:40rem; padding:16px 20px; border-radius:var(--r-control); background:var(--control); font-size:15px; line-height:1.5; color:var(--text-2)}
 .aside b{color:var(--text); font-weight:500}
 /* Step 1's App Store links, and the commands to paste into rootshell and
-   Minis (drawn like Help's wallet addresses, further down). */
+   Minis (drawn like Help's wallet addresses, further down). Minis's command
+   is a button that opens its terminal with it typed in; the command itself
+   is folded under "Or paste it manually". */
 .app-links{display:flex; flex-wrap:wrap; gap:12px}
 .cmd + .cmd{margin-top:8px}
+.cmd-open{margin-top:12px}
+.sheet .cmd-open{margin-top:20px}
+.cmd-manual{margin-top:12px}
+.cmd-manual > summary{
+  display:inline-flex; align-items:center; gap:4px; padding:4px 0; cursor:pointer;
+  list-style:none; font-size:15px; color:var(--accent);
+}
+.cmd-manual > summary::-webkit-details-marker{display:none}
+.cmd-manual > summary .icon{font-size:.9em; stroke-width:2; transition:transform var(--mid) var(--ease)}
+.cmd-manual[open] > summary .icon{transform:rotate(180deg)}
+.cmd-manual > p{margin-top:8px}
+.cmd-manual .cmd{margin-top:12px}
 
 /* Legacy: the enterprise certificates, folded under the steps. Closed it's
    one line, like a question on Help; open, the DNS profile and the list. */
