@@ -392,60 +392,6 @@
     handoff.hidden = appleTouch;
   }
 
-  /* ---------- tutorials (Help) ---------- */
-
-  var tutorials = $("#tutorialVideos");
-  if (tutorials) (function () {
-    var VIDEOS = {
-      en: { sidestore: ["4J4muoczR54", "OyeYTSEheQw"], jit: ["U90-4jA8Kj8", "WCYkxfRHapg"] },
-      es: { sidestore: ["tXGihEkcg-4"], jit: ["hEhkDEALNWo"] }
-    };
-    var STRINGS = {
-      en: { sidestore: "Installing SideStore", jit: "Enabling JIT", part: "Part", watch: "Watch on YouTube" },
-      es: { sidestore: "Instalar SideStore", jit: "Activar JIT", part: "Parte", watch: "Ver en YouTube" }
-    };
-    var lang = "en", topic = "sidestore";
-
-    function build() {
-      var ids = VIDEOS[lang][topic] || [], s = STRINGS[lang];
-      tutorials.textContent = "";
-      ids.forEach(function (id, i) {
-        var title = ids.length > 1 ? s[topic] + ", " + s.part.toLowerCase() + " " + (i + 1) : s[topic];
-        var figure = doc.createElement("figure");
-        var frame = doc.createElement("div");
-        frame.className = "film-frame";
-        frame.appendChild(player(id, title, false));
-        var caption = doc.createElement("figcaption");
-        var label = doc.createElement("span");
-        label.textContent = title;
-        var link = doc.createElement("a");
-        link.className = "link";
-        link.href = "https://youtu.be/" + id;
-        link.target = "_blank";
-        link.rel = "noopener";
-        link.textContent = s.watch;
-        caption.appendChild(label);
-        caption.appendChild(link);
-        figure.appendChild(frame);
-        figure.appendChild(caption);
-        tutorials.appendChild(figure);
-      });
-    }
-
-    $$("[data-pick]").forEach(function (group) {
-      var kind = group.getAttribute("data-pick");
-      group.addEventListener("click", function (e) {
-        var btn = e.target.closest && e.target.closest("button[data-value]");
-        if (!btn) return;
-        if (kind === "lang") lang = btn.getAttribute("data-value");
-        else topic = btn.getAttribute("data-value");
-        $$("button", group).forEach(function (b) { b.setAttribute("aria-pressed", b === btn ? "true" : "false"); });
-        build();
-      });
-    });
-    build();
-  })();
-
   /* ---------- crypto donations (Help): one wallet at a time, by tab ---------- */
 
   var coins = $("#coins");

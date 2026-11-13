@@ -810,7 +810,7 @@ kbd{
   .select{width:100%}
 }
 
-/* ---------- help: tutorials, questions, community, donations ---------- */
+/* ---------- help: tutorial, questions, community, donations ---------- */
 
 .seg{display:inline-flex; padding:2px; border-radius:10px; background:var(--control); box-shadow:inset 0 0 0 1px var(--hairline)}
 .seg button{
@@ -820,10 +820,9 @@ kbd{
 }
 .seg button:hover{color:var(--text)}
 .seg button[aria-pressed="true"],.seg button[aria-selected="true"]{background:#22304a; color:var(--text)}
-.seg-row{display:flex; flex-wrap:wrap; gap:12px}
-.videos{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px 16px; margin-top:24px}
-.videos figcaption{display:flex; justify-content:space-between; gap:12px; margin-top:12px; font-size:14px; color:var(--text-2)}
-@media (max-width:719px){.videos{grid-template-columns:minmax(0,1fr)}}
+.video{max-width:44rem; margin:24px 0 0}
+.video figcaption{display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-top:12px; font-size:14px; color:var(--text-2)}
+.video figcaption .link{flex:none}
 
 .faq{max-width:44rem; border-top:1px solid var(--hairline)}
 .faq details{border-bottom:1px solid var(--hairline)}
