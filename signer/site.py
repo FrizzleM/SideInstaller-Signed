@@ -42,7 +42,7 @@ PARTIALS = ("head", "nav", "footer")
 VERSIONED = ("site.css", "site.js", "icons.svg")
 VERSIONED_LINK = re.compile(r'assets/(' + "|".join(re.escape(n) for n in VERSIONED) + r')(?=["#])')
 HEADLINE = "Install SideInstaller"
-TAGLINE = "Three steps on the iPhone you want to set up. No computer, no certificate."
+TAGLINE = "One command on the iPhone you want to set up. No computer, no certificate."
 BETA_HEADLINE = "Install the beta"
 # siboot installs the latest stable release, so a beta only comes from the
 # certificates: beta.html opens Legacy ({{LEGACY_OPEN}}) and says so.

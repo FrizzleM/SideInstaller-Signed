@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>{{PAGE_TITLE}}</title>
-<meta name="description" content="Install SideInstaller on your iPhone in three steps, with two free App Store apps and no computer.">
+<meta name="description" content="Install SideInstaller on your iPhone with two free App Store apps and no computer.">
 {{HEAD}}
 </head>
 <body>
@@ -41,7 +41,8 @@
   <div class="flow" id="flow">
 
     <section class="flow-step" id="apps">
-      <div class="flow-rail"><span class="node"><span>1</span></span></div>
+      <!-- Not a numbered step: what you need before step 1. -->
+      <div class="flow-rail"><span class="node is-lead"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#download"/></svg></span></div>
       <div>
         <h2>Get the apps</h2>
         <p>Free on the App Store. Needs iOS 27 or later, Wi-Fi, <a class="link" href="#devmode" data-dialog="devmode">Developer Mode</a> on, and Open Minis 1.16 or later.</p>
@@ -55,33 +56,17 @@
     </section>
 
     <section class="flow-step" id="pair">
-      <div class="flow-rail"><span class="node"><span>2</span></span></div>
+      <div class="flow-rail"><span class="node"><span>1</span></span></div>
       <div>
-        <h2>Pair</h2>
-        <p>In Open Minis, the first time.</p>
+        <h2>Run the command</h2>
+        <p>In Open Minis.</p>
         <div class="flow-body">
           <ol class="howto">
             <li>Tap the console icon at the top right, then <b>Shell Terminal</b>.</li>
             <li>Connect LocalDevVPN, then run:
               <div class="cmd"><code>wget -qO- https://raw.githubusercontent.com/FrizzleM/siboot/main/minis/install.sh | sh</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
             </li>
-            <li>A page opens over the terminal. Tap <b>Start pairing</b> on it. A player opens too: leave it open, it keeps Minis running while you're in Settings.</li>
-            <li>In <b>Settings › Privacy &amp; Security › Developer Mode</b>, tap <b>Pair with siboot</b> at the bottom. Enter your passcode, then the code siboot shows, which also comes as a notification.</li>
-            <li>Go back to Open Minis.</li>
-          </ol>
-        </div>
-      </div>
-    </section>
-
-    <section class="flow-step" id="install">
-      <div class="flow-rail"><span class="node"><span>3</span></span></div>
-      <div>
-        <h2>Install</h2>
-        <p>On siboot's page.</p>
-        <div class="flow-body">
-          <ol class="howto">
-            <li>Sign in with your Apple Account. Keep Minis open until it's done. Closed the page? Press return in the terminal to bring it back.</li>
-            <li>Trust your Apple Account in <b>Settings › General › VPN &amp; Device Management</b>, then open SideInstaller. The page's <b>Open SideInstaller</b> button does that.</li>
+            <li>Follow siboot's instructions.</li>
           </ol>
         </div>
       </div>
@@ -122,7 +107,7 @@
 
   </div>
 
-  <!-- Opened by step 1's "Developer Mode" link (assets/site.js). -->
+  <!-- Opened by the "Developer Mode" link under Get the apps (assets/site.js). -->
   <dialog class="sheet" id="devmode" aria-labelledby="devmodeTitle">
     <button type="button" class="sheet-close" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#x"/></svg></button>
     <h2 class="title" id="devmodeTitle">No Developer Mode in Settings?</h2>
