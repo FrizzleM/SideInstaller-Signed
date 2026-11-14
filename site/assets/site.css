@@ -740,7 +740,7 @@ kbd{
 .howto b{color:var(--text); font-weight:500}
 .aside{max-width:40rem; padding:16px 20px; border-radius:var(--r-control); background:var(--control); font-size:15px; line-height:1.5; color:var(--text-2)}
 .aside b{color:var(--text); font-weight:500}
-/* Step 1's App Store links, and the commands to paste into rootshell and
+/* Step 1's App Store links, and the command to paste into Open
    Minis (drawn like Help's wallet addresses, further down). */
 .app-links{display:flex; flex-wrap:wrap; gap:12px}
 .cmd + .cmd{margin-top:8px}
