@@ -663,7 +663,7 @@ kbd{
 }
 .sheet::backdrop{background:rgba(5,11,24,.7); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px)}
 .sheet[open]{animation:film-in var(--mid) var(--ease) both}
-.sheet .title{padding-right:44px}
+.sheet .title{padding-right:44px; text-wrap:balance}
 .sheet p{margin-top:12px; font-size:16px; line-height:1.5; color:var(--text-2)}
 .sheet b{color:var(--text); font-weight:500}
 .sheet .cmd{margin-top:20px}
@@ -746,6 +746,8 @@ kbd{
    Minis (drawn like Help's wallet addresses, further down). */
 .app-links{display:flex; flex-wrap:wrap; gap:12px}
 .cmd + .cmd{margin-top:8px}
+/* Under the command, the link to its jsDelivr twin (where GitHub is blocked). */
+.howto .cmd + p{margin-top:12px}
 
 /* Legacy: the enterprise certificates, folded under the steps. Closed it's
    one line, like a question on Help; open, the DNS profile and the list. */

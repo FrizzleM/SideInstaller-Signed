@@ -66,6 +66,7 @@
             <li>Tap the console icon at the top right, then <b>Shell Terminal</b>.</li>
             <li>Connect LocalDevVPN, then run:
               <div class="cmd"><code>wget -qO- https://raw.githubusercontent.com/FrizzleM/siboot/main/minis/install.sh | sh</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
+              <p><a class="link" href="#github-blocked" data-dialog="github-blocked">GitHub blocked where you are?</a></p>
             </li>
             <li>Follow siboot's instructions.</li>
           </ol>
@@ -114,6 +115,17 @@
     <h2 class="title" id="devmodeTitle">No Developer Mode in Settings?</h2>
     <p>Connect LocalDevVPN. In Open Minis, tap the console icon at the top right, then <b>Shell Terminal</b>, and run this. Developer Mode then appears in <b>Settings › Privacy &amp; Security › Developer Mode</b>.</p>
     <div class="cmd"><code>wget -qO- https://raw.githubusercontent.com/FrizzleM/siboot/main/minis/install.sh | sh -s developer-mode</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
+  </dialog>
+
+  <!-- Opened by the link under step 1's command, or by arriving at
+       install.html#github-blocked (assets/site.js). The same install.sh through
+       jsDelivr, where raw.githubusercontent.com is blocked (mainland China, Iran).
+       siboot 0.21.0 gets SideInstaller before it asks for LocalDevVPN. -->
+  <dialog class="sheet" id="github-blocked" aria-labelledby="githubBlockedTitle">
+    <button type="button" class="sheet-close" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#x"/></svg></button>
+    <h2 class="title" id="githubBlockedTitle">GitHub blocked where you are?</h2>
+    <p>Connect the VPN you use for GitHub, not LocalDevVPN, and run this instead. siboot downloads SideInstaller first, over whatever VPN is on, then asks you to switch to LocalDevVPN.</p>
+    <div class="cmd"><code>wget -qO- https://fastly.jsdelivr.net/gh/FrizzleM/siboot@main/minis/install.sh | sh</code><button type="button" class="btn btn-sm btn-secondary copy-btn"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#copy"/></svg><span>Copy</span></button></div>
   </dialog>
 
   <div class="block pair">
