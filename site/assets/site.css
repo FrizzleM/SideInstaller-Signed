@@ -667,6 +667,7 @@ kbd{
 .sheet p{margin-top:12px; font-size:16px; line-height:1.5; color:var(--text-2)}
 .sheet b{color:var(--text); font-weight:500}
 .sheet .cmd{margin-top:20px}
+.sheet .cmd + p{margin-top:20px}
 .sheet-close{
   position:absolute; top:16px; right:16px; display:grid; place-items:center; width:32px; height:32px; padding:0; border:0; border-radius:50%;
   background:var(--raised); color:var(--text-2); font-size:15px; cursor:pointer;
