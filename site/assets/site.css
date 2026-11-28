@@ -864,6 +864,7 @@ kbd{
 .pair{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px}
 .pair .panel{display:flex; flex-direction:column; align-items:flex-start; padding:28px}
 .pair .panel p{margin:8px 0 24px; flex:1; font-size:16px; line-height:1.5; color:var(--text-2)}
+.pair.single{grid-template-columns:minmax(0,1fr)}
 @media (max-width:719px){.pair{grid-template-columns:minmax(0,1fr)}}
 
 .coins{max-width:28rem; margin-top:40px}
