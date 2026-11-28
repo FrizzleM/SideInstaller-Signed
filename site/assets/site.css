@@ -775,6 +775,8 @@ kbd{
 .legacy > summary .icon{align-self:center; margin-left:auto; font-size:18px; color:var(--muted); transition:transform var(--mid) var(--ease)}
 .legacy[open] > summary .icon{transform:rotate(180deg)}
 .legacy-body{padding:4px 0 32px}
+/* With siboot's steps hidden (SIBOOT_PAUSED in signer/site.py), Legacy leads the flow. */
+.flow-step[hidden] ~ .legacy{margin-top:0}
 .legacy-body > * + *{margin-top:16px}
 @media (max-width:599px){
   .flow-step{grid-template-columns:minmax(0,1fr)}

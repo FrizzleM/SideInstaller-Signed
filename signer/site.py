@@ -43,6 +43,13 @@ VERSIONED = ("site.css", "site.js", "icons.svg")
 VERSIONED_LINK = re.compile(r'assets/(' + "|".join(re.escape(n) for n in VERSIONED) + r')(?=["#])')
 HEADLINE = "Install SideInstaller"
 TAGLINE = "One command on the iPhone you want to set up. No computer, no certificate."
+# While Open Minis is off the App Store, siboot's steps can't be followed:
+# install.html hides them ({{SIBOOT_HIDDEN}}) and opens Legacy, and the
+# banner in partials/nav.html says why. Set to False and drop the banner
+# once siboot works again.
+SIBOOT_PAUSED = True
+PAUSED_TAGLINE = ("Open Minis is off the App Store for now, so install from a certificate "
+                  "under Legacy on the iPhone you want to set up.")
 BETA_HEADLINE = "Install the beta"
 # siboot installs the latest stable release, so a beta only comes from the
 # certificates: beta.html opens Legacy ({{LEGACY_OPEN}}) and says so.
@@ -264,6 +271,8 @@ def build(*, root: Path, out: Path, static_dir: Path, site_url: str, signed_repo
                                                      app.get("version", ""), app.get("title") or "SideInstaller"))
         if channel == "stable":
             page, title, headline, tagline, qr = "install.html", HEADLINE, HEADLINE, TAGLINE, HANDOFF_QR
+            if SIBOOT_PAUSED:
+                tagline = PAUSED_TAGLINE
             download = f"https://github.com/{main_repo}/releases/latest/download/{ipa_asset}"
         else:
             page, title, headline, tagline, qr = "beta.html", "SideInstaller beta", BETA_HEADLINE, BETA_TAGLINE, ""
@@ -274,7 +283,8 @@ def build(*, root: Path, out: Path, static_dir: Path, site_url: str, signed_repo
                                 page_url=f"{host}/{page}", qr=qr, prefix=prefix, now=now)
         # The footer names the stable version; the page's own line names this release's.
         tokens = {**shared, "{{PAGE_VERSION}}": _esc(app.get("version") or "—"),
-                  "{{LEGACY_OPEN}}": " open" if channel == "beta" else "", **tokens}
+                  "{{LEGACY_OPEN}}": " open" if channel == "beta" or SIBOOT_PAUSED else "",
+                  "{{SIBOOT_HIDDEN}}": " hidden" if SIBOOT_PAUSED else "", **tokens}
         # An install page's own navigation link stands in for the Install button.
         (out / page).write_text(compose(install_page, parts, tokens, current="install.html" if channel == "stable" else "",
                                         cta=False, versions=versions), encoding="utf-8")
