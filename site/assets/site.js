@@ -368,18 +368,23 @@
   }
 
   /* Legacy stays folded unless a link points into it: #legacy, or #setup and
-     #installation, where the certificates were steps 1 and 2. A target inside
-     a closed <details> has no box to scroll to, so it's scrolled to once open. */
-  var legacy = $("#legacy");
-  if (legacy) {
-    var openLegacy = function () {
+     #installation, where the certificates were steps 1 and 2. The same goes
+     for siboot's steps while they're folded (#siboot, #apps, #pair). A target
+     inside a closed <details> has no box to scroll to, so it's scrolled to
+     once open. */
+  var folds = doc.querySelectorAll("details.legacy");
+  if (folds.length) {
+    var openFold = function () {
       var target = location.hash.length > 1 ? doc.getElementById(location.hash.slice(1)) : null;
-      if (!target || !legacy.contains(target)) return;
-      legacy.open = true;
-      if (target !== legacy) target.scrollIntoView();
+      if (!target) return;
+      for (var i = 0; i < folds.length; i++) {
+        if (!folds[i].contains(target)) continue;
+        folds[i].open = true;
+        if (target !== folds[i]) target.scrollIntoView();
+      }
     };
-    window.addEventListener("hashchange", openLegacy);
-    openLegacy();
+    window.addEventListener("hashchange", openFold);
+    openFold();
   }
 
   /* SideInstaller only installs onto the device this page is open on, so

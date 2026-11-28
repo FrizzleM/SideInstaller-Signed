@@ -40,7 +40,8 @@
 
   <div class="flow" id="flow">
 
-    <section class="flow-step" id="apps"{{SIBOOT_HIDDEN}}>
+    {{SIBOOT_FOLD_OPEN}}
+    <section class="flow-step" id="apps">
       <!-- Not a numbered step: what you need before step 1. -->
       <div class="flow-rail"><span class="node is-lead"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#download"/></svg></span></div>
       <div>
@@ -55,7 +56,7 @@
       </div>
     </section>
 
-    <section class="flow-step" id="pair"{{SIBOOT_HIDDEN}}>
+    <section class="flow-step" id="pair">
       <div class="flow-rail"><span class="node"><span>1</span></span></div>
       <div>
         <h2>Run the command</h2>
@@ -73,6 +74,7 @@
         </div>
       </div>
     </section>
+{{SIBOOT_FOLD_CLOSE}}
 
     <!-- The enterprise certificates, folded away. #setup and #installation are
          where they were steps 1 and 2; assets/site.js opens this for a link to

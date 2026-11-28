@@ -775,9 +775,13 @@ kbd{
 .legacy > summary .icon{align-self:center; margin-left:auto; font-size:18px; color:var(--muted); transition:transform var(--mid) var(--ease)}
 .legacy[open] > summary .icon{transform:rotate(180deg)}
 .legacy-body{padding:4px 0 32px}
-/* With siboot's steps hidden (SIBOOT_PAUSED in signer/site.py), Legacy leads the flow. */
-.flow-step[hidden] ~ .legacy{margin-top:0}
 .legacy-body > * + *{margin-top:16px}
+/* While SIBOOT_PAUSED (signer/site.py) folds siboot's steps away, Legacy
+   leads the flow and the fold sits under it as the next row. */
+.flow:has(> .siboot){display:flex; flex-direction:column}
+.flow > .siboot{order:1; margin-top:0; border-top:0}
+.siboot ~ .legacy{margin-top:0}
+.siboot > .legacy-body{padding-top:16px}
 @media (max-width:599px){
   .flow-step{grid-template-columns:minmax(0,1fr)}
   .flow-rail{display:flex; align-items:center; gap:12px; margin-bottom:12px}
