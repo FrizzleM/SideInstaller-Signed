@@ -145,6 +145,19 @@ kbd{
 .dot.warn{background:var(--warning)}
 .dot.bad{background:var(--negative)}
 
+/* ---------- notice ----------
+   One line above the nav on every page, in the warning amber. It scrolls
+   away; the nav below it still sticks. */
+
+.notice{
+  background:rgba(229,161,64,.1); border-bottom:1px solid rgba(229,161,64,.22);
+  color:var(--text); font-size:14px; line-height:1.43;
+}
+.notice-in{display:flex; align-items:flex-start; gap:10px; padding-top:10px; padding-bottom:10px}
+.notice .icon{flex:none; margin-top:2px; font-size:16px; color:var(--warning)}
+.notice a{color:var(--warning); font-weight:600; text-decoration:none}
+.notice a:hover{text-decoration:underline}
+
 /* ---------- navigation ---------- */
 
 .nav{
